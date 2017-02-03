@@ -79,34 +79,34 @@ def main():
         badge_timer = threading.Timer(5, blue.press, args=[blue.input_gpio])
         badge_timer.start()
       while True:
-        blink_thread = threading.Thread(target=red.continuous_blink)
-        blink_thread.start()
-        if evt.wait():
-          # checks if no buttons are pressed, regardless of number of instances
-          # used to clear evt if it is manually set to prevent unintended loops
-          if not auth_lib.check_all_buttons(auth_lib.Button.instances):
-            evt.clear()
-          if red.pressed and not blue.pressed:
-            badge_timer.cancel()
-            auth_lib.cancel_timers(thread_list)
-            # unpresses red, but also sets evt manually so that blink_thread
-            # can start
-            beep_timer = threading.Timer(5, unpress_button, args=[red, evt])
-            shutoff_timer = threading.Timer(10, blue.press,
-                                            args=[blue.input_gpio])
-            beep_timer.start()
-            shutoff_timer.start()
-            # new list with new timer objects
-            thread_list = [beep_timer, shutoff_timer]
-            red.light_on()
-            power_tail.activate()
-            notify_tone.happy_tune()
-            break
-          if blue.pressed:
-            badge = auth_lib.power_off(badge_timer, red, badge, thread_list)
-            power_tail.deactivate()
-            notify_tone.sad_tune()
-            break
+        # checks if no buttons are pressed, regardless of number of instances
+        # used to clear evt if it is manually set to prevent unintended loops
+        if not auth_lib.check_all_buttons(auth_lib.Button.instances):
+          blink_thread = threading.Thread(target=red.continuous_blink)
+          blink_thread.start()
+          evt.clear()
+          evt.wait()
+        if red.pressed and not blue.pressed:
+          badge_timer.cancel()
+          auth_lib.cancel_timers(thread_list)
+          # unpresses red, but also sets evt manually so that blink_thread
+          # can start
+          beep_timer = threading.Timer(5, unpress_button, args=[red, evt])
+          shutoff_timer = threading.Timer(10, blue.press,
+                                          args=[blue.input_gpio])
+          beep_timer.start()
+          shutoff_timer.start()
+          # new list with new timer objects
+          thread_list = [beep_timer, shutoff_timer]
+          red.light_on()
+          power_tail.activate()
+          notify_tone.happy_tune()
+          break
+        if blue.pressed:
+          badge = auth_lib.power_off(badge_timer, red, badge, thread_list)
+          power_tail.deactivate()
+          notify_tone.sad_tune()
+          break
 
       evt.clear()
       if red.pressed:
@@ -116,3 +116,4 @@ def main():
 
 if __name__ == '__main__':
   main()
+
