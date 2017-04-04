@@ -17,20 +17,17 @@
 """Abstraction around RPi.GPIO for relay type outputs.
 """
 
-# TODO add pretty error for version mismatch
-from RPi import GPIO
 
-from authbox.api import BaseThing
+from authbox.api import BasePinThread, GPIO
 
 types = {
     'ActiveHigh': 1,
     'ActiveLow': 0,
 }
 
-class Relay(BaseThing):
+class Relay(BasePinThread):
   def __init__(self, event_queue, config_name, output_type, output_pin):
-    super(Relay, self).__init__(event_queue, config_name)
-    self.output_pin = int(output_pin)
+    super(Relay, self).__init__(event_queue, config_name, None, int(output_pin))
     self.output_on_val = types[output_type]
 
   def run(self):

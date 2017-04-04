@@ -17,19 +17,12 @@
 """Abstraction around RPi.GPIO for buzzer type outputs.
 """
 
-# TODO add pretty error for version mismatch
-from RPi import GPIO
+from authbox.api import BasePinThread, GPIO
 
-from authbox.api import BaseThing
-
-class Buzzer(BaseThing):
+class Buzzer(BasePinThread):
   def __init__(self, event_queue, config_name, output_pin):
-    super(Buzzer, self).__init__(event_queue, config_name)
-    self.output_pin = int(output_pin)
+    super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
 
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)  # for reusing pins
-    GPIO.setup(self.output_pin, GPIO.OUT)
     GPIO.output(self.output_pin, False)
 
   def run(self):

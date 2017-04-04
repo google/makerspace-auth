@@ -19,11 +19,10 @@
 
 import evdev
 
-from authbox.api import BaseThing
+from authbox.api import BaseDerivedThread, NoMatchingDevice
 
-class NoMatchingDevice(Exception): pass
 
-class HIDKeystrokingReader(BaseThing):
+class HIDKeystrokingReader(BaseDerivedThread):
   scancodes = {
       # Scancode: ASCIICode
       0: None, 1: u'ESC', 2: u'1', 3: u'2', 4: u'3', 5: u'4', 6: u'5', 7: u'6',
@@ -56,7 +55,7 @@ class HIDKeystrokingReader(BaseThing):
     super(HIDKeystrokingReader, self).__init__(event_queue, config_name)
     self._on_scan = on_scan
     self._device_name = device_name
-    self.fo = self.get_scanner_device()
+    self.f = self.get_scanner_device()
 
   def get_scanner_device(self):
     """Finds connected device matching device_name.
@@ -73,7 +72,7 @@ class HIDKeystrokingReader(BaseThing):
         device = dev
         return device
 
-    raise NoMatchingDevice(self.device_name)
+    raise NoMatchingDevice(self._device_name)
 
   def read_input(self):
     """Listens solely to the RFID keyboard and returns the scanned badge.
@@ -87,7 +86,7 @@ class HIDKeystrokingReader(BaseThing):
 
     rfid = ''
     capitalized = 0
-    device = self.fo
+    device = self.f
     for event in device.read_loop():
       data = evdev.categorize(event)
       if event.type == evdev.ecodes.EV_KEY and data.keystate == 1:
