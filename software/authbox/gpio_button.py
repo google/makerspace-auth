@@ -15,25 +15,13 @@
 """Abstraction around RPi.GPIO for blinky buttons.
 """
 
-# TODO add pretty error for version mismatch
-from RPi import GPIO
 import Queue
 
-from authbox.api import BaseThing
+from authbox.api import BasePinThread, GPIO
 
-class Button(BaseThing):
+class Button(BasePinThread):
   def __init__(self, event_queue, config_name, input_pin, output_pin, on_down=None):
-    super(Button, self).__init__(event_queue, config_name)
-    self.input_pin = int(input_pin)
-    self.output_pin = int(output_pin)
-
-    # TODO options for pullup/down/active high/active low?
-    # Right now assumes pullup, and active low
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)  # for reusing pins
-    GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(self.output_pin, GPIO.OUT)
-    GPIO.output(self.output_pin, False)
+    super(Button, self).__init__(event_queue, config_name, int(input_pin), int(output_pin))
 
     self._on_down = on_down
     self.blink_command_queue = Queue.Queue()

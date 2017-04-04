@@ -24,6 +24,12 @@ import Queue
 import re
 import threading
 
+try:
+  from RPi import GPIO
+  # TODO check version and output error
+except ImportError:
+  GPIO = None
+
 KNOWN_CLASSES = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',
     'authbox.gpio_button.Button',
@@ -32,7 +38,7 @@ KNOWN_CLASSES = [
 ]
 
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
-TEMPLATE_RE = re.compile(r'{(\w+)}')
+TEMPLATE_RE = re.compile(r'{((?!\d)\w+)}')
 
 def recursive_config_lookup(value, section, stack=None):
   if stack is None:
@@ -94,22 +100,38 @@ class Config(object):
     else:
       raise Exception('Unknown time_string format', time_string)
 
-
   def get_int_seconds(self, section, option, default):
     if self._config.has_option(section, option):
       return self.parse_time(self.get(section, option))
     else:
       return self.parse_time(default)
 
-class BaseThing(threading.Thread):
+
+class BaseDerivedThread(threading.Thread):
   def __init__(self, event_queue, config_name):
     # TODO should they also have numeric ids?
-    thread_name = "%s %s" % (self.__class__.__name__, name)
-    super(BaseThing, self).__init__(name=thread_name)
+    thread_name = "%s %s" % (self.__class__.__name__, config_name)
+    super(BaseDerivedThread, self).__init__(name=thread_name)
     self.daemon = True
 
     self.event_queue = event_queue
     self.config_name = config_name
+
+
+class BasePinThread(BaseDerivedThread):
+  def __init__(self, event_queue, config_name, input_pin, output_pin):
+    super(BasePinThread, self).__init__(event_queue, config_name)
+
+    self.input_pin = input_pin
+    self.output_pin = output_pin
+
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)  # for reusing pins
+    if self.input_pin:
+      GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    if self.output_pin:
+      GPIO.setup(self.output_pin, GPIO.OUT)
+
 
 class BaseDispatcher(object):
   def __init__(self, config):

@@ -40,6 +40,10 @@ class RecursiveConfigParamLookupTest(unittest.TestCase):
     self.assertEquals('b', authbox.api.recursive_config_lookup('{a}', d))
     self.assertRaises(KeyError, authbox.api.recursive_config_lookup, '{x}', d)
 
+  def test_simple_left_alone(self):
+    d = {'a': 'b'}
+    self.assertEquals('{0} b', authbox.api.recursive_config_lookup('{0} {a}', d))
+
   def test_recursive(self):
     d = {'a': '{b}{b}', 'b': '{c}2', 'c': 'd', 'broken': '{b2}', 'b2': '{missing}'}
     self.assertEquals('d2d2', authbox.api.recursive_config_lookup('{a}', d))

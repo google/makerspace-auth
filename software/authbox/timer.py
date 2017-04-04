@@ -17,15 +17,12 @@
 """Abstraction around RPi.GPIO for relay type outputs.
 """
 
-# TODO add pretty error for version mismatch
-from RPi import GPIO
-
 import Queue
 import threading
 
-from api import BaseThing
+from authbox.api import BaseDerivedThread
 
-class Timer(BaseThing):
+class Timer(BaseDerivedThread):
   def __init__(self, event_queue, config_name, callback):
     super(Timer, self).__init__(event_queue, config_name)
     self.set_queue = Queue.Queue(1)
