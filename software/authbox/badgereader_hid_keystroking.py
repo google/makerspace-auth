@@ -56,6 +56,7 @@ class HIDKeystrokingReader(BaseDerivedThread):
     self._on_scan = on_scan
     self._device_name = device_name
     self.f = self.get_scanner_device()
+    self.f.grab()
 
   def get_scanner_device(self):
     """Finds connected device matching device_name.
@@ -64,15 +65,12 @@ class HIDKeystrokingReader(BaseDerivedThread):
       The file for input events that read_input can listen to
     """
 
-    device_name = '<USBBadgeScanner>'
     devices = [evdev.InputDevice(x) for x in evdev.list_devices()]
-    device = None
     for dev in devices:
       if str(dev.name) == self._device_name:
-        device = dev
-        return device
+        return dev
 
-    raise NoMatchingDevice(self._device_name)
+    raise NoMatchingDevice(self._device_name, [d.name for d in devices], "check permissions?")
 
   def read_input(self):
     """Listens solely to the RFID keyboard and returns the scanned badge.
@@ -87,7 +85,9 @@ class HIDKeystrokingReader(BaseDerivedThread):
     rfid = ''
     capitalized = 0
     device = self.f
+    print "About to read_input"
     for event in device.read_loop():
+      #print "read_input event", event
       data = evdev.categorize(event)
       if event.type == evdev.ecodes.EV_KEY and data.keystate == 1:
       # detects if the keyboard uses "LSHFT"
@@ -101,9 +101,9 @@ class HIDKeystrokingReader(BaseDerivedThread):
             capitalized ^= 1
           else:
             rfid += self.scancodes[data.scancode]
+    print "Badge read:", rfid
     return rfid
 
-  def run(self):
-    while True:
-      line = self.read_input()
-      self.event_queue.put(self._on_scan, line)
+  def run_inner(self):
+    line = self.read_input()
+    self.event_queue.put((self._on_scan, line))

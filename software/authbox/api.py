@@ -14,97 +14,90 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Main API for Authbox
+"""Main API for Authbox.
 
+This is the core items like BaseDispatcher (which you should subclass); for
+peripherals see other files.
 """
 
-import ConfigParser
-import os.path
 import Queue
-import re
+import sys
 import threading
+import traceback
+# TODO give each object a logger and use that instead of print statements.
 
+# This simplifies imports for other modules that are already importing from api.
 try:
   from RPi import GPIO
   # TODO check version and output error
 except ImportError:
-  GPIO = None
+  import warnings
+  warnings.warn('Using FakeRPi suitable for testing only!')
+  from FakeRPi import GPIO
 
-KNOWN_CLASSES = [
+CLASS_REGISTRY = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',
     'authbox.gpio_button.Button',
-    'authbox.gpio_output.Relay',
+    'authbox.gpio_relay.Relay',
+    'authbox.gpio_buzzer.Buzzer',
     'authbox.timer.Timer',
 ]
 
-# TODO: This is very simplistic, supporting no escapes or indirect lookups
-TEMPLATE_RE = re.compile(r'{((?!\d)\w+)}')
+class BaseDispatcher(object):
+  def __init__(self, config):
+    self.config = config
+    self.event_queue = Queue.Queue()  # unbounded
+    self.threads = []
 
-def recursive_config_lookup(value, section, stack=None):
-  if stack is None:
-    stack = []
-  # Typically these are shallow, so this is efficient enough
-  if value in stack:
-    raise CycleError
-  stack.append(value)
+  def load_config_object(self, name, **kwargs):
+    # N.b. args are from config, kwargs are passed from python.
+    # This sometimes causes confusing error messages like
+    # "takes at least 5 arguments (5 given)".
+    options = self.config.get('pins', name).split(':')
+    cls_name = options[0]
+    for c in CLASS_REGISTRY:
+      if c.endswith('.' + cls_name):
+        cls = _import(c)
+        break
+    else:
+      raise Exception('Unknown item', name)
+    print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
+    obj = cls(self.event_queue, name, *options[1:], **kwargs)
+    setattr(self, name, obj)
+    self.threads.append(obj)
 
-  def local_sub(match):
-    return recursive_config_lookup(section[match.group(1)], section, stack)
-  response = TEMPLATE_RE.sub(local_sub, value)
-  stack.pop()
-  return response
+  def run_loop(self):
+    # Doesn't really support calling run_loop() more than once
+    for th in self.threads:
+      th.start()
+    try:
+      while True:
+        # We pass a small timeout because .get(block=True) without it causes
+        # trouble handling Ctrl-C.
+        try:
+          item = self.event_queue.get(timeout=1.0)
+        except Queue.Empty:
+          continue
+        if item is SHUTDOWN_SENTINEL:
+          break
+        # These only happen here to serialize access regardless of what thread
+        # handled it.
+        func, args = item[0], item[1:]
+        try:
+          func(*args)
+        except Exception as e:
+          print "Got exception", repr(e), "executing", func, args
+    except KeyboardInterrupt:
+      print "Got Ctrl-C, shutting down."
 
-class CycleError(Exception):
+    # Assuming all threads are daemonized, we will now shut down.
+
+
+SHUTDOWN_SENTINEL = object()
+
+
+class NoMatchingDevice(Exception):
   pass
-
-class Config(object):
-  # TODO more than one filename?
-  def __init__(self, filename):
-    self._config = ConfigParser.RawConfigParser()
-    if filename is not None:
-      if not self._config.read([os.path.expanduser(filename)]):
-        # N.b. if config existed but was invalid, we'd get
-        # MissingSectionHeaderError or so.
-        raise Exception('Nonexistent config')
-
-  def get(self, section, option):
-    # Can raise NoOptionError, NoSectionError
-    value = self._config.get(section, option)
-    # Just an optimization
-    if '{' in value:
-      return recursive_config_lookup(value, self._config.items(section))
-    else:
-      return value
-
-  @classmethod
-  def parse_time(cls, time_string):
-    # Returns seconds
-    units = {
-        's': 1,
-        'm': 60,
-        'h': 3600,
-        'd': 86400,
-    }
-    if not time_string:
-      raise Exception('Empty time_string')
-    elif time_string.isdigit():
-      # Fine, seconds?
-      return int(time_string)
-    elif time_string[-1] in units:
-      try:
-        number = int(time_string[:-1])
-      except ValueError:
-        number = float(time_string[:-1])
-      unit_multiplier = units[time_string[-1]]
-      return int(number * unit_multiplier)
-    else:
-      raise Exception('Unknown time_string format', time_string)
-
-  def get_int_seconds(self, section, option, default):
-    if self._config.has_option(section, option):
-      return self.parse_time(self.get(section, option))
-    else:
-      return self.parse_time(default)
 
 
 class BaseDerivedThread(threading.Thread):
@@ -116,6 +109,13 @@ class BaseDerivedThread(threading.Thread):
 
     self.event_queue = event_queue
     self.config_name = config_name
+
+  def run(self):
+    while True:
+      try:
+        self.run_inner()
+      except Exception as e:
+        traceback.print_exc()
 
 
 class BasePinThread(BaseDerivedThread):
@@ -133,39 +133,12 @@ class BasePinThread(BaseDerivedThread):
       GPIO.setup(self.output_pin, GPIO.OUT)
 
 
-class BaseDispatcher(object):
-  def __init__(self, config):
-    self.config = config
-    self.event_queue = Queue.Queue()  # unbounded
-
-  def load_config_object(self, name, **kwargs):
-    # N.b. args are from config, kwargs are passed from python
-    options = self.config.get('pins', name).split(':')
-    cls_name = options[0]
-    for c in KNOWN_CLASSES:
-      if c.endswith('.' + cls_name):
-        cls = c
-        break
-    else:
-      raise Exception('Unknown item', name)
-    obj = cls(self.event_queue, *options[1:], **kwargs)
-    setattr(self, name, obj)
-
-  def run_loop(self):
-    # Doesn't really support calling run_loop() more than once
-    while True:
-      item = self.event_queue.get()
-      if item is SHUTDOWN_SENTINEL:
-        break
-      # These only happen here to serialize access regardless of what thread
-      # handled it.
-      func, args = item[0], item[1:]
-      func(*args)
-
-    # TODO kill threads, or ensure they were all daemon
+def _import(name):
+  module, object_name = name.rsplit('.', 1)
+  # The return value of __import__ requires walking the dots, so
+  # this is a fairly standard workaround that's easier.  Intermediate
+  # names appear to always get added to sys.modules.
+  __import__(module)
+  return getattr(sys.modules[module], object_name)
 
 
-SHUTDOWN_SENTINEL = object()
-
-class NoMatchingDevice(Exception):
-  pass

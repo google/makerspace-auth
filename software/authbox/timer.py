@@ -19,6 +19,7 @@
 
 import Queue
 import threading
+import time
 
 from authbox.api import BaseDerivedThread
 
@@ -33,10 +34,17 @@ class Timer(BaseDerivedThread):
     while True:
       # TODO add a KILL sentinel
       timeout = self.set_queue.get(block=True)
+      print self, "got", timeout
       with self.cancel_condition:
         # Instead of a sleep we just pass it as a timeout here
+        t0 = time.time()
         self.cancel_condition.wait(timeout)
-        self.event_queue.put(self.callback)
+        # TODO rearchitect after finding https://bugs.python.org/issue1175933 that
+        # wait doesn't tell you whether timeout expired, sadly.
+        expired = (time.time()) - t0 >= timeout
+        print self, "expired", expired
+        if expired:
+          self.event_queue.put((self.callback, self.config_name))
 
   def set(self, delay):
     # TODO this should replace
@@ -46,6 +54,7 @@ class Timer(BaseDerivedThread):
       raise Exception("There is already a queued timeout")
 
   def cancel(self):
+    print self, "cancel"
     with self.cancel_condition:
       self.cancel_condition.notify()
     try:
