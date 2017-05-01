@@ -50,6 +50,8 @@ class HIDKeystrokingReader(BaseDerivedThread):
       100: u'RALT'
   }
 
+  LSHIFT_SCANCODE = 42
+
   # TODO verify args/kwargs here is reasonable
   def __init__(self, event_queue, config_name, device_name='<USBBadgeScanner>', on_scan=None):
     super(HIDKeystrokingReader, self).__init__(event_queue, config_name)
@@ -90,12 +92,11 @@ class HIDKeystrokingReader(BaseDerivedThread):
       #print "read_input event", event
       data = evdev.categorize(event)
       if event.type == evdev.ecodes.EV_KEY and data.keystate == 1:
-      # detects if the keyboard uses "LSHFT"
-        if data.scancode == 42:
+        if data.scancode == self.LSHIFT_SCANCODE:
           capitalized = 1
         if data.keycode == 'KEY_ENTER':
           break
-        if data.scancode != 42:
+        if data.scancode != self.LSHIFT_SCANCODE:
           if capitalized:
             rfid += self.capscancodes[data.scancode]
             capitalized ^= 1

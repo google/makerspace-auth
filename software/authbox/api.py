@@ -43,6 +43,10 @@ CLASS_REGISTRY = [
     'authbox.timer.Timer',
 ]
 
+# Add this to event_queue to request a graceful shutdown.
+SHUTDOWN_SENTINEL = object()
+
+
 class BaseDispatcher(object):
   def __init__(self, config):
     self.config = config
@@ -60,6 +64,8 @@ class BaseDispatcher(object):
         cls = _import(c)
         break
     else:
+      # This is a Python for-else, which executes if the body above didn't
+      # execute 'break'.
       raise Exception('Unknown item', name)
     print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
     obj = cls(self.event_queue, name, *options[1:], **kwargs)
@@ -93,13 +99,6 @@ class BaseDispatcher(object):
     # Assuming all threads are daemonized, we will now shut down.
 
 
-SHUTDOWN_SENTINEL = object()
-
-
-class NoMatchingDevice(Exception):
-  pass
-
-
 class BaseDerivedThread(threading.Thread):
   def __init__(self, event_queue, config_name):
     # TODO should they also have numeric ids?
@@ -131,6 +130,10 @@ class BasePinThread(BaseDerivedThread):
       GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     if self.output_pin:
       GPIO.setup(self.output_pin, GPIO.OUT)
+
+
+class NoMatchingDevice(Exception):
+  """Generic exception for missing devices."""
 
 
 def _import(name):
