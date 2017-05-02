@@ -31,6 +31,8 @@ The button pinout is (left-to-right with the tab facing down) is (``IN, n/c,
 GND, +12V, Switched GND``).  It's intended for a light and/or button per
 connector.  Arcade buttons work fairly well if your enclosure is big enough.
 
-The only connector with flyback is the one marked high current.  It's intended
-for relay or solenoid use, like for a door.  It's fairly easy to blow the
-driver chip on all the others.
+![Button image](buttonwiring.jpg)
+
+The only connector with freewheeling diode is the one marked high current.  It's
+intended for relay or solenoid use, like for a door.  It's fairly easy to blow
+the driver chip on all the others if using an inductive load (from experience).
