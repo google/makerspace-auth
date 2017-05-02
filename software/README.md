@@ -1,9 +1,19 @@
 # Software
-## Version 0.1
 
-The current iteration listens for an RFID badge scan event, which starts the "on" (red) button blinking and waits for a press event. Once red is pressed, the light becomes solid and a connected power switch comes on (turning on a device). If, at any point after a successful badge scan, the "off" (blue) button is pressed, the program resets to waiting for a badge scan (turning off LEDs and connected power switch).
+## Two-button example
 
-## Custom Variables
+See `two_button.py` for an example of how to incorporate your business logic.
 
-Depending on the badge reader used, a name will need provided to
-"get_scanner_device()" in main.py. To find the names of connected devices, `findKeyboards.py` can be run.
+The basic workflow is:
+
+1. Scan badge
+1. Press "on".  Tool will power up.
+1. Warning timer commences beeps.  If you press "on" again, you get more time.
+1. Otherwise, tool powers off.
+
+You should copy (or symlink) this file to ~/.authboxrc and make edits to conform
+to your pin numbers.  The defaults are for an RDR-6081AKU (keystroking) and
+pi-hat-1 v0.3 hardware with a relay (or PowerSwitch Tail) on the high power port.
+
+To start on boot, look into creating either a systemd unit or @reboot cron
+entry.
