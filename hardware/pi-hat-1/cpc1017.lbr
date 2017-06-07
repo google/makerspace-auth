@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.025" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -55,12 +55,13 @@
 <layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
 </layers>
 <library>
+<description>CPC1017 Optoisolator</description>
 <packages>
 <package name="SOP-4">
-<smd name="4" x="-1.27" y="2.794" dx="1.27" dy="0.635" layer="1" rot="R90"/>
-<smd name="3" x="1.27" y="2.794" dx="1.27" dy="0.635" layer="1" rot="R90"/>
-<smd name="2" x="1.27" y="-2.794" dx="1.27" dy="0.635" layer="1" rot="R90"/>
-<smd name="1" x="-1.27" y="-2.794" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="4" x="-1.27" y="3.175" dx="1.651" dy="0.635" layer="1" rot="R90"/>
+<smd name="3" x="1.27" y="3.175" dx="1.651" dy="0.635" layer="1" rot="R90"/>
+<smd name="2" x="1.27" y="-3.175" dx="1.651" dy="0.635" layer="1" rot="R90"/>
+<smd name="1" x="-1.27" y="-3.175" dx="1.651" dy="0.635" layer="1" rot="R90"/>
 <wire x1="-1.905" y1="1.905" x2="1.905" y2="1.905" width="0.127" layer="21"/>
 <wire x1="1.905" y1="1.905" x2="1.905" y2="-1.905" width="0.127" layer="21"/>
 <wire x1="1.905" y1="-1.905" x2="-1.905" y2="-1.905" width="0.127" layer="21"/>
@@ -71,8 +72,8 @@
 <symbol name="OPTO_NPOL">
 <pin name="1" x="-7.62" y="5.08" visible="pad" length="short"/>
 <pin name="2" x="-7.62" y="-5.08" visible="pad" length="short"/>
-<pin name="4" x="7.62" y="5.08" visible="pad" length="short" rot="R180"/>
-<pin name="3" x="7.62" y="-5.08" visible="pad" length="short" rot="R180"/>
+<pin name="4" x="7.62" y="5.08" visible="pad" length="short" swaplevel="1" rot="R180"/>
+<pin name="3" x="7.62" y="-5.08" visible="pad" length="short" swaplevel="1" rot="R180"/>
 <wire x1="-5.08" y1="7.62" x2="-5.08" y2="5.08" width="0.254" layer="94"/>
 <wire x1="-5.08" y1="5.08" x2="-5.08" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="-5.08" y1="-5.08" x2="-5.08" y2="-7.62" width="0.254" layer="94"/>
@@ -113,6 +114,24 @@
 </symbol>
 </symbols>
 <devicesets>
+<deviceset name="CPC1017">
+<gates>
+<gate name="G$1" symbol="OPTO_NPOL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SOP-4">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </drawing>
