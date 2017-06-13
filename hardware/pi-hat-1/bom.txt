@@ -1,7 +1,7 @@
 Main
 
     Qty P/N             Ref     Description
-    3   22-23-2021      J10,J12,J13    2p Molex KK
+    1   22-23-2021      J10     2p Molex KK
     1   22-23-2031      J       3p Molex KK
     1   22-23-2041      J8      4p Molex KK
     6   22-23-2051      J1-6    5p Molex KK
@@ -33,10 +33,10 @@ w/ 4p buck add
     1   "24v mini adjustable buck converter 3a" from ebay       J11
     1   4p header                                               (for J11)
 
-If using relay outputs, you may omit J5,J6, and need this line plus one of the
-following options:
+If using relay outputs, you may omit J5,J6, and add:
 
     2   DMN3023L-7      Q5,Q6   N-ch FET
+    2   22-23-2021      J12,J13 2p Molex KK
     one-of {
       2   HFD23 12V       RL1,RL2
       2   SS14CT-ND       D2,D3
