@@ -24,6 +24,7 @@ import Queue
 import sys
 import threading
 import traceback
+import types
 # TODO give each object a logger and use that instead of print statements.
 
 # This simplifies imports for other modules that are already importing from api.
@@ -57,20 +58,27 @@ class BaseDispatcher(object):
     # N.b. args are from config, kwargs are passed from python.
     # This sometimes causes confusing error messages like
     # "takes at least 5 arguments (5 given)".
-    options = self.config.get('pins', name).split(':')
-    cls_name = options[0]
-    for c in CLASS_REGISTRY:
-      if c.endswith('.' + cls_name):
-        cls = _import(c)
-        break
+    config_items = self.config.get('pins', name).split(',')
+    objs = []
+    for item in config_items:
+      options = item.strip().split(':')
+      cls_name = options[0]
+      for c in CLASS_REGISTRY:
+        if c.endswith('.' + cls_name):
+          cls = _import(c)
+          break
+      else:
+        # This is a Python for-else, which executes if the body above didn't
+        # execute 'break'.
+        raise Exception('Unknown item', name)
+      print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
+      obj = cls(self.event_queue, name, *options[1:], **kwargs)
+      objs.append(obj)
+      self.threads.append(obj)
+    if len(objs) == 1:
+      setattr(self, name, obj)
     else:
-      # This is a Python for-else, which executes if the body above didn't
-      # execute 'break'.
-      raise Exception('Unknown item', name)
-    print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
-    obj = cls(self.event_queue, name, *options[1:], **kwargs)
-    setattr(self, name, obj)
-    self.threads.append(obj)
+      setattr(self, name, MultiProxy(objs))
 
   def run_loop(self):
     # Doesn't really support calling run_loop() more than once
@@ -145,3 +153,21 @@ def _import(name):
   return getattr(sys.modules[module], object_name)
 
 
+class MultiMethodProxy(object):
+  def __init__(self, objs, meth):
+    self.objs = objs
+    self.meth = meth
+  def __call__(self, *args, **kwargs):
+    for i in self.objs:
+      getattr(i, self.meth)(*args, **kwargs)
+
+
+class MultiProxy(object):
+  def __init__(self, objs):
+    self.objs = objs
+
+  def __getattr__(self, name):
+    if isinstance(getattr(self.objs[0], name), types.MethodType):
+      return MultiMethodProxy(self.objs, name)
+    else:
+      return getattr(self.objs[0], name)
