@@ -18,14 +18,14 @@
 
 """
 
-import sys
-import os.path
 import subprocess
 import shlex
 
 from authbox.api import BaseDispatcher
 from authbox.config import Config
 from authbox.timer import Timer
+
+DEVNULL = open('/dev/null', 'r+')
 
 class Dispatcher(BaseDispatcher):
   def __init__(self, config):
@@ -43,6 +43,8 @@ class Dispatcher(BaseDispatcher):
     # Otherwise, start them manually!
     self.threads.extend([self.warning_timer, self.expire_timer, self.expecting_press_timer])
 
+    self.noise = None
+
   def _get_command_line(self, section, key, format_args):
     """Constructs a command line, safely.
 
@@ -55,7 +57,6 @@ class Dispatcher(BaseDispatcher):
     value = self.config.get(section, key)
     pieces = shlex.split(value)
     return [p.format(*format_args) for p in pieces]
-
 
   def badge_scan(self, badge_id):
     # Malicious badge "numbers" that contain spaces require this extra work.
@@ -71,11 +72,19 @@ class Dispatcher(BaseDispatcher):
       self.on_button.blink()
     else:
       self.buzzer.sad_noise()
+      if self.noise:
+        self.noise.kill()
+      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
+      self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
   def on_button_down(self, source):
     print "Button down", source
     if not self.authorized:
       self.buzzer.sad_noise()
+      if self.noise:
+        self.noise.kill()
+      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
+      self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
       return
     self.expecting_press_timer.cancel()
     self.on_button.on()
@@ -88,6 +97,9 @@ class Dispatcher(BaseDispatcher):
     self.warning_timer.set(self.config.get_int_seconds('auth', 'duration', '5m') -
                            self.config.get_int_seconds('auth', 'warning', '10s'))
     self.expire_timer.set(self.config.get_int_seconds('auth', 'duration', '5m'))
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
 
   def abort(self, source):
     print "Abort", source
@@ -100,9 +112,15 @@ class Dispatcher(BaseDispatcher):
     self.on_button.off()
     self.enable_output.off()
     self.buzzer.off()
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
 
   def warning(self, unused_source):
     self.buzzer.beepbeep()
+    sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'warning_filename')])
+    self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+    self.on_button.blink()
 
 
 def main(args):
