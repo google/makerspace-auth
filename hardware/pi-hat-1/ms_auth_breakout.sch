@@ -15775,7 +15775,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </classes>
 <parts>
 <part name="FRAME1" library="frames" deviceset="LETTER_L" device=""/>
-<part name="JP1" library="pinhead" deviceset="PINHD-2X20" device=""/>
+<part name="J14" library="pinhead" deviceset="PINHD-2X20" device=""/>
 <part name="IC1" library="uln-udn" deviceset="ULN2003A" device="D"/>
 <part name="P+1" library="supply1" deviceset="+12V" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
@@ -15859,7 +15859,7 @@ feed relays</text>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
 <instance part="FRAME1" gate="G$2" x="147.32" y="0"/>
-<instance part="JP1" gate="A" x="99.06" y="40.64"/>
+<instance part="J14" gate="A" x="99.06" y="40.64"/>
 <instance part="IC1" gate="A" x="93.98" y="121.92"/>
 <instance part="P+1" gate="1" x="185.42" y="86.36"/>
 <instance part="GND1" gate="1" x="185.42" y="71.12"/>
@@ -15995,17 +15995,17 @@ feed relays</text>
 <wire x1="220.98" y1="58.42" x2="220.98" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="20"/>
+<pinref part="J14" gate="A" pin="20"/>
 <wire x1="104.14" y1="40.64" x2="121.92" y2="40.64" width="0.1524" layer="91"/>
 <label x="114.3" y="40.64" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="34"/>
+<pinref part="J14" gate="A" pin="34"/>
 <wire x1="104.14" y1="22.86" x2="121.92" y2="22.86" width="0.1524" layer="91"/>
 <label x="114.3" y="22.86" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="39"/>
+<pinref part="J14" gate="A" pin="39"/>
 <wire x1="96.52" y1="15.24" x2="78.74" y2="15.24" width="0.1524" layer="91"/>
 <label x="81.28" y="15.24" size="1.778" layer="95"/>
 </segment>
@@ -16103,21 +16103,21 @@ feed relays</text>
 </net>
 <net name="TXD" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="8"/>
+<pinref part="J14" gate="A" pin="8"/>
 <wire x1="104.14" y1="55.88" x2="121.92" y2="55.88" width="0.1524" layer="91"/>
 <label x="111.76" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RXD" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="10"/>
+<pinref part="J14" gate="A" pin="10"/>
 <wire x1="104.14" y1="53.34" x2="121.92" y2="53.34" width="0.1524" layer="91"/>
 <label x="111.76" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="+3V3" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="1"/>
+<pinref part="J14" gate="A" pin="1"/>
 <wire x1="96.52" y1="63.5" x2="78.74" y2="63.5" width="0.1524" layer="91"/>
 <label x="78.74" y="63.5" size="1.778" layer="95"/>
 </segment>
@@ -16130,7 +16130,7 @@ feed relays</text>
 <pinref part="J1" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="11"/>
+<pinref part="J14" gate="A" pin="11"/>
 <wire x1="96.52" y1="50.8" x2="78.74" y2="50.8" width="0.1524" layer="91"/>
 <label x="78.74" y="50.8" size="1.778" layer="95"/>
 </segment>
@@ -16143,7 +16143,7 @@ feed relays</text>
 <pinref part="J2" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="16"/>
+<pinref part="J14" gate="A" pin="16"/>
 <wire x1="104.14" y1="45.72" x2="121.92" y2="45.72" width="0.1524" layer="91"/>
 <label x="111.76" y="45.72" size="1.778" layer="95"/>
 </segment>
@@ -16249,7 +16249,7 @@ feed relays</text>
 <label x="71.12" y="124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="33"/>
+<pinref part="J14" gate="A" pin="33"/>
 <wire x1="96.52" y1="22.86" x2="78.74" y2="22.86" width="0.1524" layer="91"/>
 <label x="78.74" y="22.86" size="1.778" layer="95"/>
 </segment>
@@ -16262,7 +16262,7 @@ feed relays</text>
 <label x="71.12" y="121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="35"/>
+<pinref part="J14" gate="A" pin="35"/>
 <wire x1="78.74" y1="20.32" x2="96.52" y2="20.32" width="0.1524" layer="91"/>
 <label x="78.74" y="20.32" size="1.778" layer="95"/>
 </segment>
@@ -16275,7 +16275,7 @@ feed relays</text>
 <label x="71.12" y="119.38" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="36"/>
+<pinref part="J14" gate="A" pin="36"/>
 <wire x1="104.14" y1="20.32" x2="121.92" y2="20.32" width="0.1524" layer="91"/>
 <label x="111.76" y="20.32" size="1.778" layer="95"/>
 </segment>
@@ -16288,7 +16288,7 @@ feed relays</text>
 <label x="71.12" y="116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="37"/>
+<pinref part="J14" gate="A" pin="37"/>
 <wire x1="96.52" y1="17.78" x2="78.74" y2="17.78" width="0.1524" layer="91"/>
 <label x="78.74" y="17.78" size="1.778" layer="95"/>
 </segment>
@@ -16301,7 +16301,7 @@ feed relays</text>
 <label x="71.12" y="114.3" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="38"/>
+<pinref part="J14" gate="A" pin="38"/>
 <wire x1="121.92" y1="17.78" x2="104.14" y2="17.78" width="0.1524" layer="91"/>
 <label x="111.76" y="17.78" size="1.778" layer="95"/>
 </segment>
@@ -16384,7 +16384,7 @@ feed relays</text>
 <pinref part="J3" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="32"/>
+<pinref part="J14" gate="A" pin="32"/>
 <wire x1="104.14" y1="25.4" x2="121.92" y2="25.4" width="0.1524" layer="91"/>
 <label x="111.76" y="25.4" size="1.778" layer="95"/>
 </segment>
@@ -16397,7 +16397,7 @@ feed relays</text>
 <pinref part="J4" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="12"/>
+<pinref part="J14" gate="A" pin="12"/>
 <wire x1="104.14" y1="50.8" x2="121.92" y2="50.8" width="0.1524" layer="91"/>
 <label x="111.76" y="50.8" size="1.778" layer="95"/>
 </segment>
@@ -16410,7 +16410,7 @@ feed relays</text>
 <pinref part="J5" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="13"/>
+<pinref part="J14" gate="A" pin="13"/>
 <wire x1="78.74" y1="48.26" x2="96.52" y2="48.26" width="0.1524" layer="91"/>
 <label x="78.74" y="48.26" size="1.778" layer="95"/>
 </segment>
@@ -16422,12 +16422,12 @@ feed relays</text>
 <wire x1="236.22" y1="81.28" x2="236.22" y2="78.74" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="2"/>
+<pinref part="J14" gate="A" pin="2"/>
 <wire x1="104.14" y1="63.5" x2="121.92" y2="63.5" width="0.1524" layer="91"/>
 <label x="111.76" y="63.5" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="4"/>
+<pinref part="J14" gate="A" pin="4"/>
 <wire x1="104.14" y1="60.96" x2="121.92" y2="60.96" width="0.1524" layer="91"/>
 <label x="111.76" y="60.96" size="1.778" layer="95"/>
 </segment>
@@ -16459,7 +16459,7 @@ feed relays</text>
 <label x="71.12" y="127" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="31"/>
+<pinref part="J14" gate="A" pin="31"/>
 <wire x1="78.74" y1="25.4" x2="96.52" y2="25.4" width="0.1524" layer="91"/>
 <label x="78.74" y="25.4" size="1.778" layer="95"/>
 </segment>
@@ -16476,7 +16476,7 @@ feed relays</text>
 </net>
 <net name="L7_LOGIC" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="29"/>
+<pinref part="J14" gate="A" pin="29"/>
 <wire x1="96.52" y1="27.94" x2="78.74" y2="27.94" width="0.1524" layer="91"/>
 <label x="78.74" y="27.94" size="1.778" layer="95"/>
 </segment>
@@ -16507,7 +16507,7 @@ feed relays</text>
 <label x="20.32" y="35.56" size="1.778" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="15"/>
+<pinref part="J14" gate="A" pin="15"/>
 <wire x1="96.52" y1="45.72" x2="78.74" y2="45.72" width="0.1524" layer="91"/>
 <label x="78.74" y="45.72" size="1.778" layer="95"/>
 </segment>
@@ -16519,7 +16519,7 @@ feed relays</text>
 <label x="30.48" y="33.02" size="1.778" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="22"/>
+<pinref part="J14" gate="A" pin="22"/>
 <wire x1="104.14" y1="38.1" x2="121.92" y2="38.1" width="0.1524" layer="91"/>
 <label x="111.76" y="38.1" size="1.778" layer="95"/>
 </segment>
@@ -16531,7 +16531,7 @@ feed relays</text>
 <label x="40.64" y="30.48" size="1.778" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="18"/>
+<pinref part="J14" gate="A" pin="18"/>
 <wire x1="104.14" y1="43.18" x2="121.92" y2="43.18" width="0.1524" layer="91"/>
 <label x="111.76" y="43.18" size="1.778" layer="95"/>
 </segment>
@@ -16562,7 +16562,7 @@ feed relays</text>
 </net>
 <net name="B6_LOGIC" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="7"/>
+<pinref part="J14" gate="A" pin="7"/>
 <wire x1="96.52" y1="55.88" x2="78.74" y2="55.88" width="0.1524" layer="91"/>
 <label x="78.74" y="55.88" size="1.778" layer="95"/>
 </segment>
@@ -16588,7 +16588,7 @@ feed relays</text>
 </net>
 <net name="HC_LOGIC" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="40"/>
+<pinref part="J14" gate="A" pin="40"/>
 <wire x1="104.14" y1="15.24" x2="121.92" y2="15.24" width="0.1524" layer="91"/>
 <label x="114.3" y="15.24" size="1.778" layer="95"/>
 </segment>
