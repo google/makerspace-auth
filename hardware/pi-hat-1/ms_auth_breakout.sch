@@ -8598,9 +8598,9 @@ The Slot footprint only works if the mill layer is transmitted to the PCB fab ho
 <packages>
 <package name="BUCK_HORIZONTAL">
 <description>This includes board markings for OKI-78SR-5/1.5-W36H-C and "12-24V To 5V 3A Step Down" which are both horizontal modules.  If you use right-angle headers, you have far less to worry about.</description>
-<pad name="OUT" x="0" y="2.54" drill="0.8" shape="long"/>
-<pad name="GND" x="0" y="0" drill="0.8" shape="long"/>
-<pad name="IN" x="0" y="-2.54" drill="0.8" shape="long" first="yes"/>
+<pad name="OUT" x="0" y="2.54" drill="1.016" shape="long"/>
+<pad name="GND" x="0" y="0" drill="1.016" shape="long"/>
+<pad name="IN" x="0" y="-2.54" drill="1.016" shape="long" first="yes"/>
 <wire x1="-1.905" y1="-6.35" x2="18.415" y2="-6.35" width="0.127" layer="21" style="shortdash"/>
 <wire x1="18.415" y1="-6.35" x2="18.415" y2="3.81" width="0.127" layer="21" style="shortdash"/>
 <wire x1="18.415" y1="3.81" x2="-1.905" y2="3.81" width="0.127" layer="21" style="shortdash"/>
@@ -8609,12 +8609,12 @@ The Slot footprint only works if the mill layer is transmitted to the PCB fab ho
 <text x="1.905" y="-0.635" size="1.27" layer="21" font="vector" ratio="12">GND</text>
 <text x="1.905" y="1.905" size="1.27" layer="21" font="vector" ratio="12">OUT</text>
 <text x="1.905" y="-5.715" size="1.27" layer="21" font="vector" ratio="12">(EN, float)</text>
-<pad name="EN" x="0" y="-5.08" drill="0.8" shape="long"/>
+<pad name="EN" x="0" y="-5.08" drill="1.016" shape="long"/>
 <wire x1="2.54" y1="5.08" x2="2.54" y2="-5.08" width="0.127" layer="39"/>
 <wire x1="2.54" y1="-5.08" x2="12.7" y2="-5.08" width="0.127" layer="39"/>
 <wire x1="12.7" y1="-5.08" x2="12.7" y2="5.08" width="0.127" layer="39"/>
 <wire x1="12.7" y1="5.08" x2="2.54" y2="5.08" width="0.127" layer="39"/>
-<wire x1="-1.524" y1="3.175" x2="-1.524" y2="-3.175" width="0.254" layer="21"/>
+<wire x1="-1.524" y1="-3.81" x2="5.461" y2="-3.81" width="0.254" layer="21"/>
 </package>
 </packages>
 <symbols>
