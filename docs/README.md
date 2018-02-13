@@ -18,9 +18,7 @@ the community and welcoming contributions that help it work with more tools.
 
 ### Connecting tools
 
-* [tool-connection/Epilog\_Mini\_24](Epilog Mini 24)
-* [tool-connection/BOFA\_AD\_Oracle\_Base\_1](BOFA Oracle Base 1)
-* [tool-connection/Generic\_Relay](Generic Relay)
+* [tool-connection/epilog\_mini\_24/](tool-connection/epilog_mini_24)
 
 ### Connecting to servers
 
