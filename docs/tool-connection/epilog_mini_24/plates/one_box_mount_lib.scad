@@ -16,12 +16,12 @@ box_hole_locations=[
 ];
 
 frame_hole_locations=[
-  [20,20],
-  [62,305],
+  [20,7.5],
+  [62,292.5],
 ];
 
 plate_width=235;
-plate_height=325;
+plate_height=300;
 
 module Plate(cap_size) {
   difference() {
