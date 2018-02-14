@@ -13,10 +13,10 @@ your box:
 * [inner plate](plates/one_box_mount_inner.svg)
 * [outer plate](plates/one_box_mount_outer.svg)
 
-| Item       | Qty |
-| ---------- | --- |
-| M4x14      | 8   |
-| M4 nut     | 8   |
+| Item               | Qty |
+| ------------------ | --- |
+| M4x14              | 8   |
+| M4 nut             | 8   |
 | M4 (fender) washer | 8   |
 | #8-32 x 7/8" or 1" | 2   |
 
@@ -25,26 +25,29 @@ perfect or be at peace with the holes being re-threaded.
 
 ### Box
 
-This is built around a 188x193mm box that you can get [on
-Amazon](https://www.amazon.com/gp/product/B0725ZQFJW) or [Aliexpress](https://www.aliexpress.com/wholesale?SearchText=waterproof+192*188*100mm).  There's plenty of room
-for activities in this.
+This is built around a 188x193mm box that you can get
+[on Amazon](https://www.amazon.com/gp/product/B0725ZQFJW) or
+[Aliexpress](https://www.aliexpress.com/wholesale?SearchText=waterproof+192*188*100mm).
+There's plenty of room for activities in this.
 
 ![exploded view](plates/one_box_mount_demo.png)
 
 You need to drill 4 holes in the back, and some holes in the sides.  See the
-hole template for more, and make sure it's in the correct orientation.
+hole template for details (place it on the *back* of the box, and make sure it's
+in the correct orientation).
 
 <img src="plates/one_box_mount_hole_template.svg" height="400" />
 
 * [hole template](plates/one_box_mount_hole_template.svg)
+* [lid hole template](plates/one_box_mount_lid_hole_template.svg)
+* [side hole template](plates/one_box_mount_front_hole_template.svg)
 
 ### 3D-printed shelf
 
 <img src="shelf/bracket_in_box.jpg" height="400" /> <img src="shelf/bracket_both.png" height="400" />
 
-* [bracket+clip, with hard support](shelf/bracket_both.stl)
-* [bracket, with hard support](shelf/bracket_main.stl)
-* [bracket, without hard support](shelf/bracket_main_nosupport.stl)
+* [bracket+clip](shelf/bracket_both.stl)
+* [bracket](shelf/bracket_main.stl)
 * [clip](shelf/bracket_clip.stl)
 
 ### Power harness
@@ -61,6 +64,8 @@ hole template for more, and make sure it's in the correct orientation.
 | 25mm 3/16" heat shrink | 1 |
 | KK pin        | 2 |
 | KK 2p housing | 1 |
+
+Note the center is typically positive (red).
 
 ### Button harness
 
