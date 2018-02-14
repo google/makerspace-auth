@@ -1,3 +1,3 @@
 include <bracket_lib.scad>
-Main();
+Main(hard_support=false);
 MainClip();

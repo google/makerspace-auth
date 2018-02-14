@@ -9,4 +9,4 @@ OPENSCAD:=/usr/bin/openscad
 	convert "$@" -transparent '#ffffe5' -trim +repage "$@"
 
 .PHONY: all
-all: bracket_both.stl bracket_both.png bracket_main.stl bracket_clip.stl bracket_main_nosupport.stl
+all: bracket_both.stl bracket_both.png bracket_main.stl bracket_clip.stl

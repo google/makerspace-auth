@@ -28,26 +28,21 @@ module SideProfile() {
 }
 
 module CountersunkHole() {
-  translate([0,0,-1]) cylinder(d=8,h=7,$fn=128);
+  // bottom
+  difference() {
+    translate([0,0,-1]) cylinder(d=8,h=7.4,$fn=128);
+    translate([3,0,5+6]) cube([3,10,10], center=true);
+    translate([-3,0,5+6]) cube([3,10,10], center=true);
+  }
+  // middle
   cylinder(d=3,h=100,$fn=32);
+  // top
   translate([0,0,BaseHeight-3]) cylinder(d=6,h=10,$fn=128);
 }
 
 module CountersunkHoles() {
   for(p=HolePositions) {
     translate(p) CountersunkHole();
-  }
-}
-
-module CountersunkHoleSupport() {
-  // This is somewhat dependent on layer height.
-  cylinder(d=3.2,h=5.85,$fn=32);
-  cylinder(d=7,h=0.2,$fn=32);
-}
-
-module CountersunkHolesSupport() {
-  for(p=HolePositions) {
-    translate(p) CountersunkHoleSupport();
   }
 }
 
@@ -75,7 +70,7 @@ module Clip() {
   }
 }
 
-module Main(hard_support=true) {
+module Main() {
   difference() {
     rotate([90,0,0]) linear_extrude(height=86, convexity=4) SideProfile();
     CountersunkHoles();
@@ -89,8 +84,6 @@ module Main(hard_support=true) {
   }
   translate([5,0,BaseHeight-0.01]) Tab();
   translate([5,-61.5,BaseHeight-0.01]) Tab();
-
-  if(hard_support) CountersunkHolesSupport();
 }
 
 module MainClip() {
