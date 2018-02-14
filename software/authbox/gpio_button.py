@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ class Button(BasePinThread):
 
   def _callback(self, unused_channel):
     if self._on_down:
-      # TODO pass self or self.config_name as a string?
-      self.event_queue.put((self._on_down, self.config_name))
+      self.event_queue.put((self._on_down, self))
 
   def run(self):
     # run is only expected to be called once.

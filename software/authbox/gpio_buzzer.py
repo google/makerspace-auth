@@ -1,6 +1,4 @@
-#!/usr/bin/python
-#
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +25,7 @@ ON = 1
 BEEPING = 2
 HAPPY = 3
 SAD = 4
+BEEP = 5
 
 class Buzzer(BasePinThread):
   def __init__(self, event_queue, config_name, output_pin):
@@ -41,7 +40,7 @@ class Buzzer(BasePinThread):
       GPIO.output(self.output_pin, False)
     elif next_mode == ON:
       GPIO.output(self.output_pin, True)
-    elif next_mode == BEEPING:
+    elif next_mode in (BEEP, BEEPING):
       # TODO Support both types of piezo buzzer/transducer.
       # As-is, this provides a logic HIGH to make a 4KHz sound on PK-12N40PQ;
       # newer prototypes include one that requires the Pi to make a 4KHz
@@ -55,6 +54,8 @@ class Buzzer(BasePinThread):
         time.sleep(0.3)
         GPIO.output(self.output_pin, False)
         time.sleep(0.3)
+        if next_mode == BEEP:
+	  break
         print "...more beep"
     elif next_mode == HAPPY:
       print "Happy"
@@ -104,6 +105,10 @@ class Buzzer(BasePinThread):
   def beepbeep(self):
     self._clear()
     self.set_queue.put(BEEPING)
+
+  def beep(self):
+    self._clear()
+    self.set_queue.put(BEEP)
 
   def off(self):
     self._clear()

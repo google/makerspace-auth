@@ -18,6 +18,8 @@
 
 """
 
+import os
+import sys
 import subprocess
 import shlex
 
@@ -75,7 +77,7 @@ class Dispatcher(BaseDispatcher):
       if self.noise:
         self.noise.kill()
       sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
-      self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
   def on_button_down(self, source):
     print "Button down", source
@@ -84,7 +86,7 @@ class Dispatcher(BaseDispatcher):
       if self.noise:
         self.noise.kill()
       sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
-      self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
       return
     self.expecting_press_timer.cancel()
     self.on_button.on()

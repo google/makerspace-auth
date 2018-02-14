@@ -1,6 +1,4 @@
-#!/usr/bin/python
-#
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,6 +98,7 @@ class BaseDispatcher(object):
         try:
           func(*args)
         except Exception as e:
+          traceback.print_exc()
           print "Got exception", repr(e), "executing", func, args
     except KeyboardInterrupt:
       print "Got Ctrl-C, shutting down."

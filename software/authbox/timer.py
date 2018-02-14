@@ -1,6 +1,4 @@
-#!/usr/bin/python
-#
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,19 +29,21 @@ class Timer(BaseDerivedThread):
     self.callback = callback
 
   def run(self):
+    # TODO: This is not robust to spurious wakeups, see details in
+    # https://bugs.python.org/issue1175933 that
     while True:
       # TODO add a KILL sentinel
       timeout = self.set_queue.get(block=True)
       print self, "got", timeout
       with self.cancel_condition:
-        # Instead of a sleep we just pass it as a timeout here
+	# Instead of a sleep we just pass it as a timeout here (so it's
+	# interruptable if someone sets cancel_condition)
         t0 = time.time()
         self.cancel_condition.wait(timeout)
-        # TODO rearchitect after finding https://bugs.python.org/issue1175933 that
-        # wait doesn't tell you whether timeout expired, sadly.
         expired = (time.time()) - t0 >= timeout
         print self, "expired", expired
         if expired:
+	  # The idea here is that we call callback once per set_queue item
           self.event_queue.put((self.callback, self.config_name))
 
   def set(self, delay):
