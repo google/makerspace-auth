@@ -1,6 +1,6 @@
 box_center = [120,160];
-box_size = [188,192];
-
+box_size = [192,188];
+box_front_size = [100,188];
 
 // Non-square pattern intentional; avoid colliding with pi bracket and reduce
 // number of possible wrong orientations by half.
@@ -22,6 +22,10 @@ frame_hole_locations=[
 
 plate_width=235;
 plate_height=300;
+
+arcade_button_hole_size=24;
+arcade_button_pos = [18+27,15+42];
+badge_reader_hole_size=17;
 
 module Plate(cap_size) {
   difference() {
@@ -99,10 +103,53 @@ module HoleTemplate() {
       translate(p) circle(d=3);
     }
     translate([0,60]) text("4x 4.2mm", halign="center", size=5);
-    translate([80,40]) text("Badge reader (17mm) ->", halign="right", size=5);
+    translate([80,40]) text("Front ->", halign="right", size=5);
+    translate([-80,40]) text("<- Back", halign="left", size=5);
     translate([0,10]) text("(place on back of box)", halign="center", size=8);
-    translate([0,-10]) text("(verify 5 holes at bottom)", halign="center", size=8);
-    translate([-80,-40]) text("<- Power (8mm), actuators (??mm)", halign="left", size=5);
-    translate([-80,-50]) text("<- Ethernet (U notch)", halign="left", size=5);
+    translate([0,-10]) text("(verify interior 5 holes at sides)", halign="center", size=8);
+  }
+}
+
+module CrosshairCircle(d) {
+  difference() {
+    circle(d=d);
+    square([1,d*0.7], center=true);
+    square([d*0.7, 1], center=true);
+  }
+}
+module LidHoleTemplate() {
+  $fn=32;
+  difference() {
+    square(box_size, center=true);
+    for(y_scale=[1,-1])
+      scale([1,y_scale])
+        translate([-box_size[0]/2+arcade_button_pos[0],
+                   -box_size[1]/2+arcade_button_pos[1]])
+          CrosshairCircle(arcade_button_hole_size);
+  }
+}
+
+module FrontHoleTemplate() {
+  $fn=32;
+  difference() {
+    square(box_front_size, center=true);
+    translate([box_front_size[0]/2-20, 0]) square([1,box_front_size[1]-2], center=true);
+    text("Front", halign="center", size=5);
+    translate([0,60]) CrosshairCircle(badge_reader_hole_size);
+  }
+}
+
+module BackHoleTemplate() {
+  $fn=32;
+  difference() {
+    square(box_front_size, center=true);
+    translate([-box_front_size[0]/2+20, 0]) square([1,box_front_size[1]-2], center=true);
+    text("Back", halign="center", size=5);
+    translate([box_front_size[0]/2-35,box_front_size[1]/2-35])
+      CrosshairCircle(8);  // power
+    translate([box_front_size[0]/2-50,box_front_size[1]/2-35])
+      CrosshairCircle(8);  // actuator cables
+    translate([box_front_size[0]/2-80+4,box_front_size[1]/2-35])
+      CrosshairCircle(8);  // actuator cables
   }
 }

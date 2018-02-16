@@ -10,4 +10,4 @@ OPENSCAD:=/usr/bin/openscad
 	convert "$@" -transparent '#ffffe5' -trim +repage "$@"
 
 .PHONY: all
-all: two_box_mount_inner.svg two_box_mount_outer.svg one_box_mount_inner.svg one_box_mount_outer.svg one_box_mount_hole_template.svg one_box_mount_demo.png two_box_mount_demo.png
+all: two_box_mount_inner.svg two_box_mount_outer.svg one_box_mount_inner.svg one_box_mount_outer.svg one_box_mount_hole_template.svg one_box_mount_lid_hole_template.svg one_box_mount_front_hole_template.svg one_box_mount_demo.png two_box_mount_demo.png
