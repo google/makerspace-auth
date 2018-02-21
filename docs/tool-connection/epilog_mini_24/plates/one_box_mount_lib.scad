@@ -102,6 +102,8 @@ module HoleTemplate() {
     for(p = box_hole_pattern) {
       translate(p) circle(d=3);
     }
+    translate([-90,0]) text("A", halign="left", size=5);
+    translate([90,0]) text("B", halign="right", size=5);
     translate([0,60]) text("4x 4.2mm", halign="center", size=5);
     translate([80,40]) text("Front ->", halign="right", size=5);
     translate([-80,40]) text("<- Back", halign="left", size=5);
@@ -117,10 +119,13 @@ module CrosshairCircle(d) {
     square([d*0.7, 1], center=true);
   }
 }
+
 module LidHoleTemplate() {
   $fn=32;
   difference() {
     square(box_size, center=true);
+    translate([-box_size[0]/2+3,0]) text("C", halign="left", size=5);
+    translate([box_size[0]/2-3,0]) text("D", halign="right", size=5);
     for(y_scale=[1,-1])
       scale([1,y_scale])
         translate([-box_size[0]/2+arcade_button_pos[0],
@@ -135,6 +140,8 @@ module FrontHoleTemplate() {
     square(box_front_size, center=true);
     translate([box_front_size[0]/2-20, 0]) square([1,box_front_size[1]-2], center=true);
     text("Front", halign="center", size=5);
+    translate([-box_front_size[0]/2+3,0]) text("B", halign="left", size=5);
+    translate([box_front_size[0]/2-3,0]) text("C", halign="right", size=5);
     translate([0,60]) CrosshairCircle(badge_reader_hole_size);
   }
 }
@@ -145,6 +152,8 @@ module BackHoleTemplate() {
     square(box_front_size, center=true);
     translate([-box_front_size[0]/2+20, 0]) square([1,box_front_size[1]-2], center=true);
     text("Back", halign="center", size=5);
+    translate([box_front_size[0]/2-3,0]) text("A", halign="right", size=5);
+    translate([-box_front_size[0]/2+3,0]) text("D", halign="left", size=5);
     translate([box_front_size[0]/2-35,box_front_size[1]/2-35])
       CrosshairCircle(8);  // power
     translate([box_front_size[0]/2-50,box_front_size[1]/2-35])
