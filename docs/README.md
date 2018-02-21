@@ -19,6 +19,7 @@ the community and welcoming contributions that help it work with more tools.
 ### Connecting tools
 
 * [tool-connection/epilog\_mini\_24/](tool-connection/epilog_mini_24)
+* [tool-connection/bofa\_ad\_base\_1\_oracle/](tool-connection/bofa_ad_base_1_oracle)
 
 ### Connecting to servers
 

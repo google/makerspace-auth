@@ -102,3 +102,12 @@ Note the center is typically positive (red).
 
 Note the KK housing is installed after routing through a hole at the bottom of
 the machine.
+
+### On BOFA
+
+If you're installing this above a BOFA filter, you should move the feet over to
+prevent slipping.  3 feet are easy, but the right front foot has a nut on the
+inside.  Remove right panel to access.
+
+Once feet are removed, there are other holes about 4" closer to the middle that have
+the same thread.
