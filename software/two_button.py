@@ -67,13 +67,13 @@ class Dispatcher(BaseDispatcher):
     # TODO test with missing command
     rc = subprocess.call(command)
     if rc == 0:
-      self.buzzer.happy_noise()
+      self.buzzer.beep()
       self.authorized = True
       self.badge_id = badge_id
       self.expecting_press_timer.set(30)
       self.on_button.blink()
     else:
-      self.buzzer.sad_noise()
+      self.buzzer.beep()
       if self.noise:
         self.noise.kill()
       sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
@@ -82,7 +82,7 @@ class Dispatcher(BaseDispatcher):
   def on_button_down(self, source):
     print "Button down", source
     if not self.authorized:
-      self.buzzer.sad_noise()
+      self.buzzer.beep()
       if self.noise:
         self.noise.kill()
       sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
