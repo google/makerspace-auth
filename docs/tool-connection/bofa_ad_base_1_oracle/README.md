@@ -40,6 +40,8 @@ Once length is right, secure wire along with the existing bundle using zip ties.
 On the outside, this cable has a vertical free run, then snakes under the Epilog
 behind the rear foot, and through the plate's ziptie mount.
 
+![wiring](internal_wiring.jpg)
+
 TODO: Exterior routing diagram.
 
 TODO: Include knockout protector stl with cable clamp.
