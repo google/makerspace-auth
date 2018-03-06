@@ -93,6 +93,7 @@ class Dispatcher(BaseDispatcher):
     self.expecting_press_timer.cancel()
     self.on_button.on()
     self.enable_output.on()
+    self.buzzer.off()
     self.warning_timer.cancel()
     self.expire_timer.cancel()
     # TODO use extend time if we were already enabled, and run its command for
