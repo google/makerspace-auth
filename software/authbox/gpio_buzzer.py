@@ -77,8 +77,8 @@ class Buzzer(BasePinThread):
 
   def off(self):
     self._clear()
-    self.set_queue.put(OFF)
+    self.set_queue.put((OFF,))
 
   def on(self):
     self._clear()
-    self.set_queue.put(ON)
+    self.set_queue.put((ON,))
