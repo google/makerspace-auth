@@ -73,6 +73,7 @@ class Dispatcher(BaseDispatcher):
       self.expecting_press_timer.set(30)
       self.on_button.blink()
     else:
+      self.off_button.blink(1)
       self.buzzer.beep()
       if self.noise:
         self.noise.kill()
@@ -83,6 +84,7 @@ class Dispatcher(BaseDispatcher):
   def on_button_down(self, source):
     print "Button down", source
     if not self.authorized:
+      self.off_button.blink(1)
       self.buzzer.beep()
       if self.noise:
         self.noise.kill()
