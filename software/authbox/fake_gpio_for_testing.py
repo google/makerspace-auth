@@ -65,6 +65,7 @@ class FakeGPIO(object):
         # Entries must appear in the correct order, and only count for one.
         print("Expecting", expected_log)
         print("Actual", self.log)
+        expected_count = len(expected_log)
         i = 0
 
         # Consume entries out of expected_log only if they exist with close enough
@@ -77,6 +78,8 @@ class FakeGPIO(object):
 
         if expected_log:
             raise Exception("Missing", expected_log)
+        if len(self.log) > expected_count:
+            raise Exception("Unexpected", self.log)
 
 
 class FakeTime(object):
