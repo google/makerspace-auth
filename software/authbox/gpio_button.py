@@ -37,23 +37,36 @@ class Button(BasePinThread):
   def run(self):
     # run is only expected to be called once.
     blinking = False
+    blink_count = 0
+    steady_state = False
     while True:
       try:
         item = self.blink_command_queue.get(block=True, timeout=self.blink_duration)
         blinking = item[0]
         if blinking:
-          # Always begin on; always turn off when disabling
-          GPIO.output(self.output_pin, True)
+          # Always begin opposite of current state for immediate visual feedback
+          GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
+          # Counts every on/off transition internally
+          blink_count = item[1] * 2
         else:
-          GPIO.output(self.output_pin, item[1])
+          steady_state = item[1]
+          GPIO.output(self.output_pin, steady_state)
       except Queue.Empty:
         if blinking:
           # When blinking, invert every timeout expiration (we might have woken
           # up for some other reason, but this appears to work in practice).
           GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
+          if blink_count > 0:
+            blink_count -= 1
+            if blink_count == 0:
+              # Ensure at the end of finite blink count we always return to
+              # the last on/off steady state, even if a new blink was started
+              # before a previous blink has finished.
+              GPIO.output(self.output_pin, steady_state)
+              blinking = False
 
-  def blink(self):
-    self.blink_command_queue.put((True,))
+  def blink(self, count=0):
+    self.blink_command_queue.put((True, count))
 
   def on(self):
     self.blink_command_queue.put((False, True))
