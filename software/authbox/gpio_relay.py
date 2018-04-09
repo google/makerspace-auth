@@ -25,7 +25,7 @@ types = {
 
 class Relay(BasePinThread):
   def __init__(self, event_queue, config_name, output_type, output_pin):
-    super(Relay, self).__init__(event_queue, config_name, None, int(output_pin))
+    super(Relay, self).__init__(event_queue, config_name, None, int(output_pin), not types[output_type])
     self.output_on_val = types[output_type]
 
   def run(self):

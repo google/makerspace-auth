@@ -125,7 +125,7 @@ class BaseDerivedThread(threading.Thread):
 
 
 class BasePinThread(BaseDerivedThread):
-  def __init__(self, event_queue, config_name, input_pin, output_pin):
+  def __init__(self, event_queue, config_name, input_pin, output_pin, initial_output=GPIO.LOW):
     super(BasePinThread, self).__init__(event_queue, config_name)
 
     self.input_pin = input_pin
@@ -136,7 +136,7 @@ class BasePinThread(BaseDerivedThread):
     if self.input_pin:
       GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     if self.output_pin:
-      GPIO.setup(self.output_pin, GPIO.OUT)
+      GPIO.setup(self.output_pin, GPIO.OUT, initial=initial_output)
 
 
 class NoMatchingDevice(Exception):

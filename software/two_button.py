@@ -18,12 +18,13 @@
 
 """
 
+import atexit
 import os
 import sys
 import subprocess
 import shlex
 
-from authbox.api import BaseDispatcher
+from authbox.api import BaseDispatcher, GPIO
 from authbox.config import Config
 from authbox.timer import Timer
 
@@ -130,6 +131,8 @@ class Dispatcher(BaseDispatcher):
 
 
 def main(args):
+  atexit.register(GPIO.cleanup)
+
   if not args:
     root = '~'
   else:
