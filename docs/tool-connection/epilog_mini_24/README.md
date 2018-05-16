@@ -57,11 +57,12 @@ in the correct orientation).
 | Item          | Qty |
 | ------------- | --- |
 | EJ01A jack    | 1 |
-| 24 AWG red stranded, 21cm long | 1 |
+| 24 AWG red stranded, 21cm long   | 1 |
 | 24 AWG black stranded, 21cm long | 1 |
 | 18cm sleeving | 1 |
-| 25mm 1/4" heat shrink | 1 |
+| 25mm 1/4" heat shrink  | 1 |
 | 25mm 3/16" heat shrink | 1 |
+| 12mm 1/8" heat shrink  | 2 |
 | KK pin        | 2 |
 | KK 2p housing | 1 |
 
@@ -91,6 +92,7 @@ Note the center is typically positive (red).
 | Item          | Qty |
 | ------------- | --- |
 | 24 AWG black stranded, 80cm long | 1 |
+| 24 AWG black stranded, 82cm long | 1 |
 | 24 AWG green stranded, 3cm long  | 1 |
 | SL female pin        | 2 |
 | SL 2p female housing | 1 |
@@ -101,7 +103,8 @@ Note the center is typically positive (red).
 | small ziptie         | 1 |
 
 Note the KK housing is installed after routing through a hole at the bottom of
-the machine.
+the machine.  When crimping the M-F on green, the pins should be 180 deg out of
+phase in order for the clips to line up like the photo.
 
 ### On BOFA
 
