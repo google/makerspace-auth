@@ -77,8 +77,12 @@ module Exploded() {
   translate([box_center[0],box_center[1],120]) translate([-100,-100]) GhostBox([box_size[0],box_size[1],90]);
 }
 
+module Slot(d, dist) {
+  hull() for(y=[dist/2,-dist/2]) translate([0,y]) circle(d=d);
+}
+
 module ZiptieMount() {
-  for(x=[200,210]) translate([x,30]) square([3,6.5], center=true);
+  for(x=[200,210]) translate([x,30]) Slot(3, 7, $fn=16);
 }
 
 module Inner() {
