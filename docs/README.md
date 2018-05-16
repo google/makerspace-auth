@@ -8,13 +8,8 @@ the community and welcoming contributions that help it work with more tools.
 
 * [authboard-1.0/BOM](authboard-1.0/BOM)
 * [authboard-1.0/Soldering](authboard-1.0/Soldering)
-* [authboard-1.0/Panel](authboard-1.0/Panel)
 
-### Assembling your Authboard 0.4
-
-![Authboard](authboard_v04.jpg)
-
-* [authboard-0.4/BOM](authboard-0.4/BOM)
+![Authboard](authboard_v10.jpg)
 
 ### Connecting tools
 
