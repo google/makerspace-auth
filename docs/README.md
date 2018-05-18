@@ -6,8 +6,8 @@ the community and welcoming contributions that help it work with more tools.
 
 ### Assembling your Authboard 1.0
 
-* [authboard-1.0/BOM](authboard-1.0/BOM)
-* [authboard-1.0/Soldering](authboard-1.0/Soldering)
+* [authboard-v1.0/BOM.md](authboard-v1.0/BOM.md)
+* [authboard-v1.0/Soldering.md](authboard-v1.0/Soldering.md)
 
 ![Authboard](authboard_v10.jpg)
 
@@ -18,9 +18,9 @@ the community and welcoming contributions that help it work with more tools.
 
 ### Connecting to servers
 
-* [server/Protocol](server/Protocol)
+* [server/Protocol.md](server/Protocol.md)
 
 ### Client software
 
-* [client/Walkthrough](client/Walkthrough)
+* [client/Walkthrough.md](client/Walkthrough.md)
 

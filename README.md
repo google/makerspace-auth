@@ -10,12 +10,12 @@ employees all have the same kind of RFID badge:
 
 ## Organization
 
+    docs/
+      Documentation on the project to include contributions on tool connectivity.
     software/
       The Python client that runs on a Pi.
     hardware/
       The custom Pi hat we use to interact with buttons and a power switch tail.
-    sample_server/
-      A simple Django server that lets you view tool logs and authorize people.
 
 ## Contributing
 
