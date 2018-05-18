@@ -42,6 +42,8 @@ You can crimp or solder the switch and light side; you should crimp the Molex KK
 
 The best tool is Molex 63811-8200, but it's very expensive (350 USD).  We used a budget crimper SN-2549 (23 USD) for these photos, which is the cheapest we've tried that does OK.
 
+For a walkthrough of this process, University of Manchester has produced a video which details the workflow:  [https://www.youtube.com/watch?v=8jcfD1UW8SE](https://www.youtube.com/watch?v=8jcfD1UW8SE)
+
 ![Crimping Fig. 1](crimping1.jpg)
 1. Strip 3mm of wire.
 
