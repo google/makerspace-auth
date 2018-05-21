@@ -14,8 +14,12 @@
 
 """Main API for Authbox.
 
-This is the core items like BaseDispatcher (which you should subclass); for
-peripherals see other files.
+Your business logic should subclass BaseDispatcher and set up your peripherals
+in its __init__ method.  Most simple uses will use callbacks for everything.
+See two_button.py as an example workflow.
+
+Peripherals are kept in other files in this same package, and should be listed
+in CLASS_REGISTRY so they can be loaded lazily.
 """
 
 import Queue
@@ -26,13 +30,7 @@ import types
 # TODO give each object a logger and use that instead of print statements.
 
 # This simplifies imports for other modules that are already importing from api.
-try:
-  from RPi import GPIO
-  # TODO check version and output error
-except ImportError:
-  import warnings
-  warnings.warn('Using FakeRPi suitable for testing only!')
-  from FakeRPi import GPIO
+from RPi import GPIO
 
 CLASS_REGISTRY = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',

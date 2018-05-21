@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,3 +15,18 @@
 """
 Authbox client modules.
 """
+
+# To facilitate testing, this makes things importable on non-Raspberry Pi
+# This module isn't perfect (for example, input() doesn't read what output()
+# writes), but at least supports the api, and we can mock where it matters.
+try:
+  from RPi import GPIO
+  del GPIO
+except ImportError:
+  import warnings
+  warnings.warn('Using fake_rpi suitable for testing only!')
+  del warnings
+
+  import sys, fake_rpi
+  sys.modules['RPi'] = fake_rpi.RPi
+  del sys, fake_rpi

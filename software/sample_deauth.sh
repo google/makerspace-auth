@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
 
 set -eu
 
+# Usage: sample_deauth.sh <user> <tool>
+#
+# Logs a deauth event.  (It can't really "fail", as the client will still turn
+# the tool off.)
+#
+# If this script exits 0, the user is allowed, and disallowed otherwise.
+# Because of the set -e above, this script exits nonzero if the echo does.
+#
 user=$1
 tool=$2
 now=$(date)

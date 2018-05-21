@@ -23,16 +23,36 @@ class ConfigTest(unittest.TestCase):
   def test_parse_time(self):
     cfg = authbox.config.Config
     # ints
-    self.assertEquals(61, cfg.parse_time("61"))
-    self.assertEquals(61, cfg.parse_time("61s"))
-    self.assertEquals(3660, cfg.parse_time("61m"))
-    self.assertEquals(7200, cfg.parse_time("2h"))
-    self.assertEquals(86400, cfg.parse_time("1d"))
+    self.assertEqual(61, cfg.parse_time("61"))
+    self.assertEqual(61, cfg.parse_time("61s"))
+    self.assertEqual(90, cfg.parse_time("1m30s"))
+    self.assertEqual(3660, cfg.parse_time("61m"))
+    self.assertEqual(7200, cfg.parse_time("2h"))
+    self.assertEqual(86400, cfg.parse_time("1d"))
 
-    # TODO: floats
-    self.assertEquals(4320, cfg.parse_time("1.2h"))
-    # TODO: "" raises
-    # TODO: Unknown format raises
+    self.assertEqual(1.5, cfg.parse_time("1.5s"))
+    self.assertEqual(4320, cfg.parse_time("1.2h"))
+    self.assertRaises(Exception, cfg.parse_time, "")
+    self.assertRaises(Exception, cfg.parse_time, "30x")
+
+    self.assertEqual(5, cfg.parse_time(5))
+
+  def test_get_int_seconds(self):
+    c = authbox.config.Config(None)
+    c._config.add_section('section')
+    c._config.set('section', 'a', '15m')
+    self.assertEqual(15*60, c.get_int_seconds('section', 'a', 999))
+
+  def test_get_int_seconds_absent(self):
+    c = authbox.config.Config(None)
+    self.assertEqual(999, c.get_int_seconds('section', 'a', 999))
+
+  def test_get(self):
+    c = authbox.config.Config(None)
+    c._config.add_section('section')
+    c._config.set('section', 'a', '1{b}2')
+    c._config.set('section', 'b', 'x')
+    self.assertEqual('1x2', c.get('section', 'a'))
 
 
 class OneSectionConfig(object):
@@ -46,19 +66,19 @@ class OneSectionConfig(object):
 class RecursiveConfigParamLookupTest(unittest.TestCase):
   def test_simple(self):
     c = OneSectionConfig({'a': 'b'})
-    self.assertEquals('abc', authbox.config.recursive_config_lookup('abc', c, 'section'))
-    self.assertEquals('b', authbox.config.recursive_config_lookup('{a}', c, 'section'))
+    self.assertEqual('abc', authbox.config.recursive_config_lookup('abc', c, 'section'))
+    self.assertEqual('b', authbox.config.recursive_config_lookup('{a}', c, 'section'))
     self.assertRaises(KeyError, authbox.config.recursive_config_lookup, '{x}', c, 'section')
 
   def test_simple_left_alone(self):
     c = OneSectionConfig({'a': 'b'})
-    self.assertEquals('{0} b', authbox.config.recursive_config_lookup('{0} {a}', c, 'section'))
-    self.assertEquals('{} b', authbox.config.recursive_config_lookup('{} {a}', c, 'section'))
+    self.assertEqual('{0} b', authbox.config.recursive_config_lookup('{0} {a}', c, 'section'))
+    self.assertEqual('{} b', authbox.config.recursive_config_lookup('{} {a}', c, 'section'))
 
   def test_recursive(self):
     c = OneSectionConfig({'a': '{b}{b}', 'b': '{c}2', 'c': 'd',
                           'broken': '{b2}', 'b2': '{missing}'})
-    self.assertEquals('d2d2', authbox.config.recursive_config_lookup('{a}', c, 'section'))
+    self.assertEqual('d2d2', authbox.config.recursive_config_lookup('{a}', c, 'section'))
     self.assertRaises(KeyError, authbox.config.recursive_config_lookup, '{broken}', c, 'section')
 
   def test_recursive_fail(self):

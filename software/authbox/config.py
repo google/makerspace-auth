@@ -22,6 +22,7 @@ import ConfigParser
 
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
 TEMPLATE_RE = re.compile(r'{((?!\d)\w+)}')
+TIME_RE = re.compile(r'([\d.]+)([smhd])')
 
 
 def recursive_config_lookup(value, config, section, stack=None):
@@ -80,7 +81,19 @@ class Config(object):
 
   @classmethod
   def parse_time(cls, time_string):
-    # Returns seconds
+    """Parse a time string.
+
+    Allowable suffixes include:
+
+      s: seconds
+      m: minutes
+      h: hours
+      d: days
+
+    and can be mixed, e.g. 1m30s.
+
+    Returns the value in seconds, as an int if possible, otherwise a float.
+    """
     units = {
         's': 1,
         'm': 60,
@@ -89,18 +102,25 @@ class Config(object):
     }
     if not time_string:
       raise Exception('Empty time_string')
+    elif isinstance(time_string, (int, float)):
+      return time_string
     elif time_string.isdigit():
-      # Fine, seconds?
+      # No suffix is interpreted as seconds.
+      # TODO: This doesn't work for floats.
       return int(time_string)
-    elif time_string[-1] in units:
-      try:
-        number = int(time_string[:-1])
-      except ValueError:
-        number = float(time_string[:-1])
-      unit_multiplier = units[time_string[-1]]
-      return int(number * unit_multiplier)
     else:
-      raise Exception('Unknown time_string format', time_string)
+      # Ensure that everything is matched.
+      if TIME_RE.sub('', time_string) != '':
+        raise Exception('Unknown time_string format', time_string)
+      total = 0
+      for m in TIME_RE.finditer(time_string):
+        try:
+          number = int(m.group(1))
+        except ValueError:
+          number = float(m.group(1))
+        unit_multiplier = units[m.group(2)]
+        total += unit_multiplier * number
+      return total
 
   def get_int_seconds(self, section, option, default):
     if self._config.has_option(section, option):

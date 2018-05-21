@@ -28,14 +28,27 @@ BEEPING = 2
 BEEP = 5
 
 class Buzzer(BasePinThread):
+  """Buzzer hardware abstraction.
+
+  A buzzer is defined in config as:
+
+    [pins]
+    name = Buzzer:1
+
+  where 1 is the active-high output pin.  This only works with buzzers that
+  sound when driven with DC.  If you need to output a square wave, investigate
+  gpio_tonal_buzzer.py in the source history, and making that work with pigpio
+  for more stable frequency.
+  """
+
   def __init__(self, event_queue, config_name, output_pin):
     super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
     self.set_queue = Queue.Queue(None)
 
     GPIO.output(self.output_pin, False)
 
-  def run_inner(self):
-    item = self.set_queue.get(block=True)
+  def run_inner(self, block=True):
+    item = self.set_queue.get(block=block)
     next_mode = item[0]
     if next_mode == OFF:
       GPIO.output(self.output_pin, False)
@@ -75,10 +88,10 @@ class Buzzer(BasePinThread):
     self._clear()
     self.set_queue.put((BEEP, on_time, off_time))
 
-  def off(self):
-    self._clear()
+  def off(self, clear=True):
+    if clear: self._clear()
     self.set_queue.put((OFF,))
 
-  def on(self):
-    self._clear()
+  def on(self, clear=True):
+    if clear: self._clear()
     self.set_queue.put((ON,))

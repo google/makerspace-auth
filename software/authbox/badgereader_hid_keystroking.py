@@ -21,6 +21,23 @@ from authbox.api import BaseDerivedThread, NoMatchingDevice
 
 
 class HIDKeystrokingReader(BaseDerivedThread):
+  """Badge reader hardware abstraction.
+
+  A badge reader is defined in config as:
+
+    [pins]
+    name = HIDKeystrokingReader:<Name>
+
+  Where `<Name>` is the name evdev sees.  This appears to match a substring of
+  /dev/input/by-id, for example if that directory contains
+  `usb-RFIDeas_USB_Keyboard-event-kbd`, the evdev name is `RFIdeas USB
+  Keyboard` with spaces.  You can confirm this in Python by executing:
+
+  >>> import evdev
+  >>> [evdev.InputDevice(d).name() for d in evdev.list_devices()]
+
+  This has been tested on a couple of brands of reader and seems to be pretty generic.
+  """
   scancodes = {
       # Scancode: ASCIICode
       0: None, 1: u'ESC', 2: u'1', 3: u'2', 4: u'3', 5: u'4', 6: u'5', 7: u'6',

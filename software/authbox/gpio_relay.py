@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,21 @@ types = {
 }
 
 class Relay(BasePinThread):
+  """Relay hardware abstraction.
+
+  A relay is defined in config as:
+
+    [pins]
+    name = Relay:ActiveHigh:1
+
+  where ActiveHigh may instead be ActiveLow, as appropriate, and 1 is the output
+  pin (physical numbering).
+  """
   def __init__(self, event_queue, config_name, output_type, output_pin):
     super(Relay, self).__init__(event_queue, config_name, None, int(output_pin), not types[output_type])
     self.output_on_val = types[output_type]
+    # TODO: Push this initial setup into BasePinThread, to avoid a momentary glitch
+    self.off()
 
   def run(self):
     pass  # Don't need a thread
