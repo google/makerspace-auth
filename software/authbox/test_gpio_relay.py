@@ -33,15 +33,15 @@ class RelayTest(unittest.TestCase):
     self.b = authbox.gpio_relay.Relay(self.q, 'b', 'ActiveHigh', '1')
     self.time.sleep(5)
     self.b.on()
-    self.assertTrue(self.fake.compare_log([
-        (0, 1, False), (5, 1, True)]))
+    self.fake.compare_log([
+        (0, 1, False), (5, 1, True)])
 
   def test_activelow(self):
     self.b = authbox.gpio_relay.Relay(self.q, 'b', 'ActiveLow', '1')
     self.time.sleep(5)
     self.b.on()
-    self.assertTrue(self.fake.compare_log([
-        (0, 1, True), (5, 1, False)]))
+    self.fake.compare_log([
+        (0, 1, True), (5, 1, False)])
 
 
 

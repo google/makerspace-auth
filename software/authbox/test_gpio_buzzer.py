@@ -43,9 +43,8 @@ class BuzzerTest(unittest.TestCase):
     self.b.off()
     self.b.run_inner(False)
     self.assertRaises(Queue.Empty, self.b.run_inner, False)
-    # TODO: The compare_log isn't checking that *two* exist here.
-    self.assertTrue(self.fake.compare_log([
-        (0, 1, False), (2, 1, False)]))
+    self.fake.compare_log([
+        (0, 1, False), (2, 1, False)])
 
   def test_beep(self):
     self.b.beep()
@@ -53,9 +52,9 @@ class BuzzerTest(unittest.TestCase):
     self.b.on()
     self.b.run_inner(False)
     self.assertRaises(Queue.Empty, self.b.run_inner, False)
-    self.assertTrue(self.fake.compare_log([
+    self.fake.compare_log([
         (0, 1, False), (0, 1, True), (0.3, 1, False),
-        (0.6, 1, True)]))
+        (0.6, 1, True)])
 
   # BEEPING mode is not very testable, due to the infinite loop and empty
   # check.  We could put this in another thread, but that's a test for another
@@ -65,6 +64,6 @@ class BuzzerTest(unittest.TestCase):
   #  self.b.off(clear=False)  # Unusual, but avoids races in test.
   #  self.b.run_inner(False)
   #  # Queue is not empty.
-  #  self.assertTrue(self.fake.compare_log([
-  #      (0, 1, False), (0.3, 1, True), (0.6, 1, False)]))
+  #  self.fake.compare_log([
+  #      (0, 1, False), (0.3, 1, True), (0.6, 1, False)])
 

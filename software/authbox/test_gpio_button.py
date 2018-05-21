@@ -36,7 +36,7 @@ class BlinkTest(unittest.TestCase):
     self.b.on()
     self.b.run_inner()
     # 2 is output
-    self.assertTrue(self.fake.compare_log([(0, 2, True)]))
+    self.fake.compare_log([(0, 2, True)])
     # 1 is input
     self.assertEqual(GPIO.FALLING, self.fake.events[1][0])
     self.fake.events[1][1](None)
@@ -49,5 +49,5 @@ class BlinkTest(unittest.TestCase):
     self.b.blink()
     for i in range(4):
       self.b.run_inner()
-    self.assertTrue(self.fake.compare_log([
-        (0.0, 2, True), (0.5, 2, False), (1.0, 2, True), (1.5, 2, False)]))
+    self.fake.compare_log([
+        (0.0, 2, True), (0.5, 2, False), (1.0, 2, True), (1.5, 2, False)])

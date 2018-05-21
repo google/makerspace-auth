@@ -17,6 +17,9 @@
 import time
 from RPi import GPIO
 
+def _log_match(a, b):
+  return abs(a[0] - b[0]) < 0.1 and a[1] == b[1] and a[2] == b[2]
+
 class FakeGPIO(object):
   """Fake for the RPi.GPIO module (parts of it)."""
 
@@ -49,16 +52,26 @@ class FakeGPIO(object):
       self.events[n][1]()
 
   def compare_log(self, expected_log):
+    """Check that the correct log entries exist in the right order.
+
+    Raises:
+      Exception: if that is not true.
+    """
+    # Entries must appear in the correct order, and only count for one.
     print "Expecting", expected_log
     print "Actual", self.log
-    for entry in expected_log:
-      for e in self.log:
-        if abs(e[0] - entry[0]) < 0.1 and e[1] == entry[1] and e[2] == entry[2]:
-          break
-      else:
-        print "Missing", entry
-        return False
-    return True
+    i = 0
+
+    # Consume entries out of expected_log only if they exist with close enough
+    # timestamps and in the proper order.  If any are leftover at the end, the
+    # test fails.
+    while expected_log and i < len(self.log):
+      if _log_match(expected_log[0], self.log[i]):
+        expected_log.pop(0)
+      i += 1
+
+    if expected_log:
+      raise Exception("Missing", expected_log)
 
 
 class FakeTime(object):
@@ -74,3 +87,4 @@ class FakeTime(object):
     self.t += x
 
 # TODO: Queue patcher that also advances time
+
