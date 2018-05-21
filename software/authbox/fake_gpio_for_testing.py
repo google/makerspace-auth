@@ -40,8 +40,14 @@ class FakeGPIO(object):
     return self.pin_states[n]
 
   def add_event_detect(self, n, edge, callback=None, bouncetime=None):
+    # TODO only supports one callback
     self.events[n] = (edge, callback, bouncetime)
-  
+
+  def press(self, n, edge):
+    # TODO support bidirectional edge
+    if self.events[n] and self.events[n][0] == edge:
+      self.events[n][1]()
+
   def compare_log(self, expected_log):
     print "Expecting", expected_log
     print "Actual", self.log
