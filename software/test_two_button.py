@@ -37,6 +37,8 @@ off_button=Button:3:4
 enable_output=Relay:ActiveHigh:5
 badge_reader=HIDKeystrokingReader:badge_scanner
 buzzer=Buzzer:9
+traffic_light=ThreePosSwitch:1:2:3:4:5
+
 [auth]
 duration=20s
 warning=10s

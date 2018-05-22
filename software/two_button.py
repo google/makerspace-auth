@@ -41,6 +41,7 @@ class Dispatcher(BaseDispatcher):
     self.load_config_object('badge_reader', on_scan=self.badge_scan)
     self.load_config_object('enable_output')
     self.load_config_object('buzzer')
+    self.load_config_object('traffic_light', on_change=self.change_traffic_light)
     self.warning_timer = Timer(self.event_queue, 'warning_timer', self.warning)
     self.expire_timer = Timer(self.event_queue, 'expire_timer', self.abort)
     self.expecting_press_timer = Timer(self.event_queue, 'expecting_press_timer', self.abort)
@@ -132,6 +133,10 @@ class Dispatcher(BaseDispatcher):
       sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'warning_filename')])
       self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     self.on_button.blink()
+
+  def change_traffic_light(self, source):
+    command = self._get_command_line('auth', 'status_command', [source.state])
+    subprocess.call(command)
 
 
 def main(args):

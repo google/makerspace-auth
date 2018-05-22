@@ -35,8 +35,9 @@ from RPi import GPIO
 CLASS_REGISTRY = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',
     'authbox.gpio_button.Button',
-    'authbox.gpio_relay.Relay',
     'authbox.gpio_buzzer.Buzzer',
+    'authbox.gpio_relay.Relay',
+    'authbox.gpio_switch_three.ThreePosSwitch',
     'authbox.timer.Timer',
 ]
 
