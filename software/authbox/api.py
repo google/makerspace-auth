@@ -56,6 +56,7 @@ class BaseDispatcher(object):
     # "takes at least 5 arguments (5 given)".
     config_items = self.config.get('pins', name).split(',')
     objs = []
+    # TODO: Support disabling an item, via 'name=' syntax
     for item in config_items:
       options = item.strip().split(':')
       cls_name = options[0]
@@ -66,7 +67,9 @@ class BaseDispatcher(object):
       else:
         # This is a Python for-else, which executes if the body above didn't
         # execute 'break'.
-        raise Exception('Unknown item', name)
+        raise Exception(
+          'Cannot load class %r for config item %r: not in CLASS_REGISTRY' %
+          (cls_name, name))
       print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
       obj = cls(self.event_queue, name, *options[1:], **kwargs)
       objs.append(obj)

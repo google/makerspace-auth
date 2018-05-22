@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017-2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import os
 import sys
 import subprocess
 import shlex
+import ConfigParser
 
 from authbox.api import BaseDispatcher, GPIO
 from authbox.config import Config
@@ -57,7 +58,10 @@ class Dispatcher(BaseDispatcher):
       - {} works on each arg independently (probably not what you want).
       - {5} works fine.
     """
-    value = self.config.get(section, key)
+    try:
+      value = self.config.get(section, key)
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
+      return None
     pieces = shlex.split(value)
     return [p.format(*format_args) for p in pieces]
 
