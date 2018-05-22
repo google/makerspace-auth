@@ -42,7 +42,7 @@ class Dispatcher(BaseDispatcher):
     self.load_config_object('enable_output')
     self.load_config_object('buzzer')
     self.load_config_object('traffic_light', on_change=self.change_traffic_light)
-    self.warning_timer = Timer(self.event_queue, 'warning_timer', self.warning)
+    self.warning_timer = Timer(self.event_queue, 'warning_timer', self.sound_attention)
     self.expire_timer = Timer(self.event_queue, 'expire_timer', self.abort)
     self.expecting_press_timer = Timer(self.event_queue, 'expecting_press_timer', self.abort)
     # Otherwise, start them manually!
@@ -73,33 +73,22 @@ class Dispatcher(BaseDispatcher):
     # TODO test with missing command
     rc = subprocess.call(command)
     if rc == 0:
-      self.buzzer.beep()
       self.authorized = True
       self.badge_id = badge_id
-      self.expecting_press_timer.set(30)
-      self.on_button.blink()
+      self.expecting_press_timer.set(
+          self.config.get_int_seconds('auth', 'initial_badge_time', '30s'))
+      self.sound_chirp()
     else:
-      self.buzzer.beep()
-      if self.noise:
-        self.noise.kill()
-      if self.config.get('sounds', 'enable') == '1':
-        sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
-        self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+      self.sound_deny()
 
   def on_button_down(self, source):
     print "Button down", source
     if not self.authorized:
-      self.buzzer.beep()
-      if self.noise:
-        self.noise.kill()
-      if self.config.get('sounds', 'enable') == '1':
-        sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'sad_filename')])
-        self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+      self.sound_deny()
       return
     self.expecting_press_timer.cancel()
     self.on_button.on()
     self.enable_output.on()
-    self.buzzer.off()
     self.warning_timer.cancel()
     self.expire_timer.cancel()
     # TODO use extend time if we were already enabled, and run its command for
@@ -108,9 +97,7 @@ class Dispatcher(BaseDispatcher):
     self.warning_timer.set(self.config.get_int_seconds('auth', 'duration', '5m') -
                            self.config.get_int_seconds('auth', 'warning', '10s'))
     self.expire_timer.set(self.config.get_int_seconds('auth', 'duration', '5m'))
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
+    self.sound_stop()
 
   def abort(self, source):
     print "Abort", source
@@ -122,21 +109,50 @@ class Dispatcher(BaseDispatcher):
     self.expecting_press_timer.cancel()
     self.on_button.off()
     self.enable_output.off()
-    self.buzzer.off()
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
-
-  def warning(self, unused_source):
-    self.buzzer.beepbeep()
-    if self.config.get('sounds', 'enable') == '1':
-      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'warning_filename')])
-      self.noise = subprocess.Popen(shlex.split(sound_command), stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
-    self.on_button.blink()
+    self.sound_stop()
 
   def change_traffic_light(self, source):
     command = self._get_command_line('auth', 'status_command', [source.state])
     subprocess.call(command)
+
+  def sound_deny(self):
+    if self.buzzer:
+      self.buzzer.beep()
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
+    if self.config.get('sounds', 'enable', default='0') == '1':
+      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'deny_filename')])
+      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+
+  def sound_chirp(self):
+    if self.buzzer:
+      self.buzzer.beep()
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
+    if self.config.get('sounds', 'enable', default='0') == '1':
+      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'chirp_filename')])
+      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+    self.on_button.blink()
+
+  def sound_attention(self, unused_source=None):
+    if self.buzzer:
+      self.buzzer.beepbeep()
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
+    if self.config.get('sounds', 'enable', default='0') == '1':
+      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'attention_filename')])
+      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+    self.on_button.blink()
+
+  def sound_stop(self):
+    if self.buzzer:
+      self.buzzer.off()
+    if self.noise:
+      self.noise.kill()
+      self.noise = None
 
 
 def main(args):
