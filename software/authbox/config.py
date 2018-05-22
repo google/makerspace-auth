@@ -70,7 +70,10 @@ class Config(object):
         # MissingSectionHeaderError or so.
         raise Exception('Nonexistent config', filename)
 
-  def get(self, section, option):
+  def get(self, section, option, **kwargs):
+    # Require it as a kwarg; this is so we can return falsy values like None.
+    if 'default' in kwargs and not self._config.has_option(section, option):
+      return kwargs['default']
     # Can raise NoOptionError, NoSectionError
     value = self._config.get(section, option)
     # Just an optimization
@@ -123,7 +126,4 @@ class Config(object):
       return total
 
   def get_int_seconds(self, section, option, default):
-    if self._config.has_option(section, option):
-      return self.parse_time(self.get(section, option))
-    else:
-      return self.parse_time(default)
+    return self.parse_time(self.get(section, option, default=default))

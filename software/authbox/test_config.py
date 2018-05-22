@@ -15,6 +15,7 @@
 """Tests for authbox.config"""
 
 import unittest
+import ConfigParser
 
 import authbox.config
 
@@ -53,6 +54,15 @@ class ConfigTest(unittest.TestCase):
     c._config.set('section', 'a', '1{b}2')
     c._config.set('section', 'b', 'x')
     self.assertEqual('1x2', c.get('section', 'a'))
+
+  def test_get_default(self):
+    c = authbox.config.Config(None)
+    c._config.add_section('section')
+    c._config.set('section', 'a', '1')
+    self.assertEqual('1', c.get('section', 'a'))
+    self.assertRaises(ConfigParser.NoOptionError, c.get, 'section', 'b')
+    self.assertEqual('def', c.get('section', 'b', default='def'))
+    self.assertEqual(None, c.get('section', 'b', default=None))
 
 
 class OneSectionConfig(object):

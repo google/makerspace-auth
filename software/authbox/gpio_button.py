@@ -49,6 +49,7 @@ class Button(BasePinThread):
 
   def run_inner(self):
     """Perform one on/off/blink pulse."""
+    # TODO: Unify this with buzzer beeping, so we can also do single blinks.
     try:
       item = self.blink_command_queue.get(block=True, timeout=self.blink_duration)
       self.blinking = item[0]
@@ -78,5 +79,5 @@ class Button(BasePinThread):
   def off(self):
     """Turn the light (if present) off indefinitely.
 
-    If the light is currently in the blink state, it stops blinkin."""
+    If the light is currently in the blink state, it stops blinking."""
     self.blink_command_queue.put((False, False))
