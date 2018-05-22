@@ -15,7 +15,10 @@
 """Test helper that logs instead of altering pin states."""
 
 import time
+import sys, fake_rpi
+sys.modules['RPi'] = fake_rpi.RPi
 from RPi import GPIO
+
 
 def _log_match(a, b):
   return abs(a[0] - b[0]) < 0.1 and a[1] == b[1] and a[2] == b[2]

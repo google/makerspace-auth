@@ -20,7 +20,6 @@ import Queue
 
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
-from RPi import GPIO
 
 
 class RelayTest(unittest.TestCase):

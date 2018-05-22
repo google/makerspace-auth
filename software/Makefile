@@ -1,4 +1,4 @@
-NOSE?=nosetests2
+NOSE?=nosetests
 
 .PHONY: test
 test:
