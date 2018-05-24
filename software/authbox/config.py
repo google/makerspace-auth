@@ -23,7 +23,7 @@ import ConfigParser
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
 TEMPLATE_RE = re.compile(r'{((?!\d)\w+)}')
 TIME_RE = re.compile(r'([\d.]+)([smhd])')
-
+SIMPLE_FLOAT_RE = re.compile(r'^[\d.]+$')
 
 def recursive_config_lookup(value, config, section, stack=None):
   """Looks up format references in ConfigParser objects.
@@ -61,20 +61,45 @@ class CycleError(Exception):
 
 
 class Config(object):
-  # TODO more than one filename?
+  """A wrapper around ConfigParser."""
   def __init__(self, filename):
+    """Initialize.
+
+    Args:
+      filenames: may be a string or sequence.  If None, start with an empty
+          config.
+    """
     self._config = ConfigParser.RawConfigParser()
     if filename is not None:
-      if not self._config.read([os.path.expanduser(filename)]):
-        # N.b. if config existed but was invalid, we'd get
-        # MissingSectionHeaderError or so.
-        raise Exception('Nonexistent config', filename)
+      if isinstance(filename, basestring):
+        filenames = [filename]
+      else:
+        filenames = filename
+
+      for f in filenames:
+        # Read one at a time for better error messages.
+        if not self._config.read([os.path.expanduser(f)]):
+          # N.b. if config existed but was invalid, we'd get
+          # MissingSectionHeaderError or so.
+          raise Exception('Nonexistent config', f)
 
   def get(self, section, option, **kwargs):
-    # Require it as a kwarg; this is so we can return falsy values like None.
+    """Get one config value.
+
+    Args:
+      section: The section name
+      option: The key name
+      default: Return this value if the option (or whole section) is missing.
+          Must be specified as kwarg, so that None can be handled easily.
+
+    Returns:
+      The value from config (with {params} looked up), or default.
+
+    Raises:
+      NoOptionError, NoSectionError: If default is not provided.
+    """
     if 'default' in kwargs and not self._config.has_option(section, option):
       return kwargs['default']
-    # Can raise NoOptionError, NoSectionError
     value = self._config.get(section, option)
     # Just an optimization
     if '{' in value:
@@ -83,7 +108,7 @@ class Config(object):
       return value
 
   @classmethod
-  def parse_time(cls, time_string):
+  def parse_time(cls, time_string, bare_number_suffix='s'):
     """Parse a time string.
 
     Allowable suffixes include:
@@ -106,11 +131,14 @@ class Config(object):
     if not time_string:
       raise Exception('Empty time_string')
     elif isinstance(time_string, (int, float)):
-      return time_string
+      return time_string * units[bare_number_suffix]
     elif time_string.isdigit():
-      # No suffix is interpreted as seconds.
-      # TODO: This doesn't work for floats.
-      return int(time_string)
+      # ints
+      return int(time_string) * units[bare_number_suffix]
+    elif SIMPLE_FLOAT_RE.match(time_string):
+      # simple floats like '1.1', not '1e5'
+      # invalid ones like '1.1.1' raise an exception
+      return float(time_string) * units[bare_number_suffix]
     else:
       # Ensure that everything is matched.
       if TIME_RE.sub('', time_string) != '':

@@ -38,6 +38,16 @@ class ConfigTest(unittest.TestCase):
 
     self.assertEqual(5, cfg.parse_time(5))
 
+  def test_parse_time_bare_suffix(self):
+    cfg = authbox.config.Config
+    # test all suffixes
+    self.assertEqual(1, cfg.parse_time("1", "s"))
+    self.assertEqual(60, cfg.parse_time("1", "m"))
+    self.assertEqual(3600, cfg.parse_time("1", "h"))
+    self.assertEqual(86400, cfg.parse_time("1", "d"))
+    # floats
+    self.assertEqual(90, cfg.parse_time("1.5", "m"))
+
   def test_get_int_seconds(self):
     c = authbox.config.Config(None)
     c._config.add_section('section')
