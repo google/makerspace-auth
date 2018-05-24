@@ -48,8 +48,6 @@ class Dispatcher(BaseDispatcher):
     # Otherwise, start them manually!
     self.threads.extend([self.warning_timer, self.expire_timer, self.expecting_press_timer])
 
-    self.noise = None
-
   def _get_command_line(self, section, key, format_args):
     """Constructs a command line, safely.
 
@@ -119,41 +117,20 @@ class Dispatcher(BaseDispatcher):
   def sound_deny(self):
     if self.buzzer:
       self.buzzer.beep()
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
-    if self.config.get('sounds', 'enable', default='0') == '1':
-      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'deny_filename')])
-      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
   def sound_chirp(self):
     if self.buzzer:
       self.buzzer.beep()
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
-    if self.config.get('sounds', 'enable', default='0') == '1':
-      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'chirp_filename')])
-      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     self.on_button.blink()
 
   def sound_attention(self, unused_source=None):
     if self.buzzer:
       self.buzzer.beepbeep()
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
-    if self.config.get('sounds', 'enable', default='0') == '1':
-      sound_command = self._get_command_line('sounds', 'command', [self.config.get('sounds', 'attention_filename')])
-      self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     self.on_button.blink()
 
   def sound_stop(self):
     if self.buzzer:
       self.buzzer.off()
-    if self.noise:
-      self.noise.kill()
-      self.noise = None
 
 
 def main(args):
