@@ -47,6 +47,12 @@ extend=20s
 command = touch enabled
 extend_command = touch enabled
 deauth_command = rm -f enabled
+
+[cmd_test]
+a = b c
+d = e f
+g = {a}{d}
+h = {a} {d}
 '''
 
 # This is the fastest way to ensure that basic logic is right, but it does not
@@ -82,3 +88,11 @@ class SimpleDispatcherTest(unittest.TestCase):
     self.dispatcher.abort(None)
     self.assertFalse(self.dispatcher.authorized)
     self.assertFalse(GPIO.input(5))
+
+  def test_get_command_line(self):
+    r = self.dispatcher._get_command_line('cmd_test', 'a', ())
+    self.assertEqual(['b', 'c'], r)
+    r = self.dispatcher._get_command_line('cmd_test', 'g', ())
+    self.assertEqual(['b', 'ce', 'f'], r)
+    r = self.dispatcher._get_command_line('cmd_test', 'h', ())
+    self.assertEqual(['b', 'c', 'e', 'f'], r)
