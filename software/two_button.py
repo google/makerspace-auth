@@ -62,6 +62,7 @@ class Dispatcher(BaseDispatcher):
     try:
       value = self.config.get(section, key)
     except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
+      print e
       return None
     pieces = shlex.split(value)
     return [p.format(*format_args) for p in pieces]
@@ -158,12 +159,23 @@ class Dispatcher(BaseDispatcher):
 def main(args):
   atexit.register(GPIO.cleanup)
 
-  if not args:
-    root = '~'
-  else:
-    root = args[0]
+  # If you run something like two_button.py local two_button_local.ini, you
+  # can now run this on a non-Pi.  Badge reader works, but buttons do not yet.
+  if args[0] == 'local':
+    import authbox.fake_gpio_for_testing
+    authbox.fake_gpio_for_testing.FakeGPIO()
+    args.pop(0)
 
-  config = Config(os.path.join(root, '.authboxrc'))
+  # The config to load will be 'two_button.ini' in the same directory as this
+  # script, optionally with other configs specified on the command line which
+  # override individual settings.  The 'two_button.local.ini' is a good place to
+  # store things like your base_url and api_key, because it's already
+  # gitignored.
+  configs = [os.path.join(sys.path[0], 'two_button.ini')]
+  for f in args:
+    configs.append(os.path.abspath(f))
+
+  config = Config(configs)
   Dispatcher(config).run_loop()
 
 if __name__ == '__main__':

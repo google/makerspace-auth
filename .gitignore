@@ -13,3 +13,5 @@
 *.bak
 cover
 .coverage
+
+software/two_button_local.ini

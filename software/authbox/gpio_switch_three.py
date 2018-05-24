@@ -77,7 +77,7 @@ class ThreePosSwitch(BasePinThread):
         (0, 0): None,  # Wiring error?
     }
     if states[(p1, p2)] == self.state:
-      print "No change"
+      #print "No change"
       return False
     self.state = states[(p1, p2)]
     color_map = {

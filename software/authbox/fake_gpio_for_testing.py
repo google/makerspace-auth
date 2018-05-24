@@ -27,7 +27,7 @@ class FakeGPIO(object):
   """Fake for the RPi.GPIO module (parts of it)."""
 
   def __init__(self, fake_time=None):
-    self.pin_states = [0] * 10
+    self.pin_states = [0] * 40
     self.events = {}
     self.time = fake_time or time
 
