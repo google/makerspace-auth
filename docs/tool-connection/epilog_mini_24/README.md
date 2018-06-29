@@ -56,7 +56,7 @@ in the correct orientation).
 
 | Item          | Qty |
 | ------------- | --- |
-| EJ01A jack    | 1 |
+| EJ501A jack    | 1 |
 | 24 AWG red stranded, 21cm long   | 1 |
 | 24 AWG black stranded, 21cm long | 1 |
 | 18cm sleeving | 1 |
