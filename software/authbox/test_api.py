@@ -99,3 +99,24 @@ class MultiProxyTest(unittest.TestCase):
     self.assertEqual(self.c.args, ('a',))
 
 
+class SplitEscapedTest(unittest.TestCase):
+
+  def test_normal(self):
+    result = list(authbox.api.split_escaped('a,b,c'))
+    self.assertEqual(result, ['a', 'b', 'c'])
+
+  def test_preserves_whitespace(self):
+    result = list(authbox.api.split_escaped(' a, b '))
+    self.assertEqual(result, [' a', ' b '])
+
+  def test_alternate_glue(self):
+    result = list(authbox.api.split_escaped('a|b', glue='|'))
+    self.assertEqual(result, ['a', 'b'])
+
+  def test_escapes(self):
+    result = list(authbox.api.split_escaped(r'a\\,\,b'))
+    self.assertEqual(result, ['a\\', ',b'])
+
+  def test_preserve(self):
+    result = list(authbox.api.split_escaped(r'a\\,\,b', preserve=True))
+    self.assertEqual(result, ['a\\\\', '\\,b'])
