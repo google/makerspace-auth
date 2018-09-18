@@ -54,10 +54,10 @@ class BaseDispatcher(object):
     # N.b. args are from config, kwargs are passed from python.
     # This sometimes causes confusing error messages like
     # "takes at least 5 arguments (5 given)".
-    config_items = self.config.get('pins', name).split(',')
+    config_items = split_escaped(self.config.get('pins', name), preserve=True)
     objs = []
     for item in config_items:
-      options = item.strip().split(':')
+      options = list(split_escaped(item.strip(), glue=':'))
       cls_name = options[0]
       for c in CLASS_REGISTRY:
         if c.endswith('.' + cls_name):
@@ -168,3 +168,22 @@ class MultiProxy(object):
       return MultiMethodProxy(self.objs, name)
     else:
       return getattr(self.objs[0], name)
+
+
+def split_escaped(s, glue=',', preserve=False):
+  """Handle single-char escapes using backslash."""
+  buf = []
+  it = iter(s)
+  for c in it:
+    if c == glue:
+      yield ''.join(buf)
+      del buf[:]
+    elif c == '\\':
+      if preserve:
+        buf.append(c)
+      c = it.next()
+      buf.append(c)
+    else:
+      buf.append(c)
+  if buf:
+    yield ''.join(buf)
