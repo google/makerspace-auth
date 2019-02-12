@@ -13,3 +13,7 @@
 *.bak
 cover
 .coverage
+
+# ignore files called out in sample_auth_check.sh to avoid issues
+authorized.txt
+log.txt
