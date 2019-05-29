@@ -51,7 +51,7 @@ class FakeGPIO(object):
   def press(self, n, edge):
     # TODO support bidirectional edge
     if self.events[n] and self.events[n][0] == edge:
-      self.events[n][1]()
+      self.events[n][1](n)
 
   def compare_log(self, expected_log):
     """Check that the correct log entries exist in the right order.
