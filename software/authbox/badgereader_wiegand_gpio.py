@@ -33,10 +33,27 @@ class WiegandGPIOReader(BaseWiegandPinThread):
   A Wiegand GPIO badge reader is defined in config as:
 
     [pins]
-    name = WiegandGPIOReader:3:5
+    name = WiegandGPIOReader:7,13
 
-  where 3 is the D0 pin (physical numbering), and 5 is the D1 pin (also 
-  physical numbering).
+  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also 
+  physical numbering).  In this configuration the 6 pin J5 connector will be
+  structured as follows:
+      Pin 1: D0
+      Pin 2: D1
+      Pin 3: No connection
+      Pin 4: Ground
+      Pin 5: 12v
+      Pin 6: No connection
+
+  Pin 6 is used for the switched +12v provided by the ULN2003AD chip
+  (L5_LOGIC).  As we want to constantly power the RFID reader, there is no need
+  to populate Pin 6.
+
+  It should also be noted that most GPIO based RFID badge readers operate at 5v
+  logic, so one should use care when connecting them to the host.  Most readers
+  communicate only from the reader to the host.  If this is the case a simple
+  voltage divider is sufficient to protect the GPIO pins on the host, in the
+  event that two way communication is needed a level shifter should be used.
   """
 
   def __init__(self, event_queue, config_name, d0_pin, d1_pin, on_scan=None,
@@ -71,7 +88,7 @@ class WiegandGPIOReader(BaseWiegandPinThread):
       None
 
     Returns:
-      badge value as string
+      badge value as string of 0's and 1's.
     """
     # Wait for a first bit to come in, slightly better than a busy-wait
     while self.bitqueue.empty():

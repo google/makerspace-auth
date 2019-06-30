@@ -139,7 +139,7 @@ class BasePinThread(BaseDerivedThread):
 
 
 class BaseWiegandPinThread(BaseDerivedThread):
-  def __init__(self, event_queue, config_name, d0_pin, d1_pin, initial_output=GPIO.LOW):
+  def __init__(self, event_queue, config_name, d0_pin, d1_pin):
     super(BaseWiegandPinThread, self).__init__(event_queue, config_name)
 
     self.d0_pin = d0_pin
