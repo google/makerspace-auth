@@ -15,16 +15,18 @@
 """Abstraction around RPi.GPIO for relay type outputs.
 """
 
-import Queue
+from __future__ import print_function
+
 import threading
 import time
 
 from authbox.api import BaseDerivedThread
+from authbox.compat import queue
 
 class Timer(BaseDerivedThread):
   def __init__(self, event_queue, config_name, callback):
     super(Timer, self).__init__(event_queue, config_name)
-    self.set_queue = Queue.Queue(1)
+    self.set_queue = queue.Queue(1)
     self.cancel_condition = threading.Condition()
     self.callback = callback
 
@@ -34,31 +36,31 @@ class Timer(BaseDerivedThread):
     while True:
       # TODO add a KILL sentinel
       timeout = self.set_queue.get(block=True)
-      print self, "got", timeout
+      print(self, "got", timeout)
       with self.cancel_condition:
-	# Instead of a sleep we just pass it as a timeout here (so it's
-	# interruptable if someone sets cancel_condition)
+        # Instead of a sleep we just pass it as a timeout here (so it's
+        # interruptable if someone sets cancel_condition)
         t0 = time.time()
         self.cancel_condition.wait(timeout)
         expired = (time.time()) - t0 >= timeout
-        print self, "expired", expired
+        print(self, "expired", expired)
         if expired:
-	  # The idea here is that we call callback once per set_queue item
+          # The idea here is that we call callback once per set_queue item
           self.event_queue.put((self.callback, self.config_name))
 
   def set(self, delay):
     # TODO this should replace
     try:
       self.set_queue.put_nowait(delay)
-    except Queue.Full:
+    except queue.Full:
       raise Exception("There is already a queued timeout")
 
   def cancel(self):
-    print self, "cancel"
+    print(self, "cancel")
     with self.cancel_condition:
       self.cancel_condition.notify()
     try:
       while True:
         self.set_queue.get_nowait()
-    except Queue.Empty:
+    except queue.Empty:
       pass

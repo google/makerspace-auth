@@ -17,6 +17,7 @@
 """Example to test all the buttons.
 
 """
+from __future__ import print_function
 
 import sys
 import time
@@ -47,7 +48,7 @@ class Dispatcher(BaseDispatcher):
     self.threads.extend([self.relay_timer])
 
   def on_button_down(self, source):
-    print "Button down", source
+    print("Button down", source)
     self.buzzer.beep()
 
     source.on()
@@ -55,7 +56,7 @@ class Dispatcher(BaseDispatcher):
     source.off()
 
   def toggle_relays(self, source):
-    print "Toggle relay", self.relay_value
+    print("Toggle relay", self.relay_value)
     if self.relay_value:
       self.relays.off()
       self.relay_value = False

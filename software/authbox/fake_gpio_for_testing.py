@@ -14,6 +14,8 @@
 
 """Test helper that logs instead of altering pin states."""
 
+from __future__ import print_function
+
 import time
 from RPi import GPIO
 
@@ -58,8 +60,8 @@ class FakeGPIO(object):
       Exception: if that is not true.
     """
     # Entries must appear in the correct order, and only count for one.
-    print "Expecting", expected_log
-    print "Actual", self.log
+    print("Expecting", expected_log)
+    print("Actual", self.log)
     i = 0
 
     # Consume entries out of expected_log only if they exist with close enough

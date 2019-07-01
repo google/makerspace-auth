@@ -16,7 +16,6 @@
 
 import sys
 import unittest
-import Queue
 import tempfile
 import threading
 import time
@@ -30,7 +29,7 @@ from authbox import fake_evdev_device_for_testing
 # Assumed to be the fake one, by authbox/__init__.py magic.
 from RPi import GPIO
 
-SAMPLE_CONFIG = '''
+SAMPLE_CONFIG = b'''
 [pins]
 on_button=Button:1:2
 off_button=Button:3:4

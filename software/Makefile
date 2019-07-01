@@ -1,4 +1,5 @@
-NOSE?=nosetests2
+PYTHON?=python
+NOSE?=$(PYTHON) -m nose
 
 .PHONY: test
 test:

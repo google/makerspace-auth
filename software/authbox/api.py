@@ -22,15 +22,18 @@ Peripherals are kept in other files in this same package, and should be listed
 in CLASS_REGISTRY so they can be loaded lazily.
 """
 
-import Queue
+from __future__ import print_function
+
 import sys
 import threading
 import traceback
 import types
-# TODO give each object a logger and use that instead of print statements.
+# TODO give each object a logger and use that instead of prints
 
 # This simplifies imports for other modules that are already importing from api.
 from RPi import GPIO
+
+from authbox.compat import queue
 
 CLASS_REGISTRY = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',
@@ -47,7 +50,7 @@ SHUTDOWN_SENTINEL = object()
 class BaseDispatcher(object):
   def __init__(self, config):
     self.config = config
-    self.event_queue = Queue.Queue()  # unbounded
+    self.event_queue = queue.Queue()  # unbounded
     self.threads = []
 
   def load_config_object(self, name, **kwargs):
@@ -67,7 +70,7 @@ class BaseDispatcher(object):
         # This is a Python for-else, which executes if the body above didn't
         # execute 'break'.
         raise Exception('Unknown item', name)
-      print "Instantiating", cls, self.event_queue, name, options[1:], kwargs
+      print("Instantiating", cls, self.event_queue, name, options[1:], kwargs)
       obj = cls(self.event_queue, name, *options[1:], **kwargs)
       objs.append(obj)
       self.threads.append(obj)
@@ -86,7 +89,7 @@ class BaseDispatcher(object):
         # trouble handling Ctrl-C.
         try:
           item = self.event_queue.get(timeout=1.0)
-        except Queue.Empty:
+        except queue.Empty:
           continue
         if item is SHUTDOWN_SENTINEL:
           break
@@ -97,9 +100,9 @@ class BaseDispatcher(object):
           func(*args)
         except Exception as e:
           traceback.print_exc()
-          print "Got exception", repr(e), "executing", func, args
+          print("Got exception", repr(e), "executing", func, args)
     except KeyboardInterrupt:
-      print "Got Ctrl-C, shutting down."
+      print("Got Ctrl-C, shutting down.")
 
     # Assuming all threads are daemonized, we will now shut down.
 
@@ -181,7 +184,7 @@ def split_escaped(s, glue=',', preserve=False):
     elif c == '\\':
       if preserve:
         buf.append(c)
-      c = it.next()
+      c = next(it)
       buf.append(c)
     else:
       buf.append(c)

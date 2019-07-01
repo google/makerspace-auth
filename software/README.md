@@ -4,7 +4,7 @@ For the basic walkthrough of how this code works, see https://google.github.io/m
 
 Prerequisites:
 
-1. Python 2.7
+1. Python 2.7 or 3.x
 1. `evdev` (python-evdev on Debian)
 1. `RPi` module (or `pip install fake-rpi` for testing)
 1. Make sure you're in the 'input' group to use evdev

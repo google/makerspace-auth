@@ -16,16 +16,16 @@
 
 import sys
 import unittest
-import Queue
 
 import authbox.badgereader_hid_keystroking
+from authbox.compat import queue
 from authbox import fake_evdev_device_for_testing
 
 class BadgereaderTest(unittest.TestCase):
   def setUp(self):
     authbox.badgereader_hid_keystroking.evdev.list_devices = fake_evdev_device_for_testing.list_devices
     authbox.badgereader_hid_keystroking.evdev.InputDevice = fake_evdev_device_for_testing.InputDevice
-    self.q = Queue.Queue()
+    self.q = queue.Queue()
     self.badgereader = authbox.badgereader_hid_keystroking.HIDKeystrokingReader(
         self.q, 'b', 'badge_scanner', on_scan=self.record)
     self.lines = []
@@ -39,4 +39,4 @@ class BadgereaderTest(unittest.TestCase):
     self.assertEqual(2, len(item))
     self.assertEqual(self.record, item[0])
     self.assertEqual('8:8', item[1])
-    self.assertRaises(Queue.Empty, self.q.get, block=False)
+    self.assertRaises(queue.Empty, self.q.get, block=False)
