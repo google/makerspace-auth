@@ -15,9 +15,9 @@
 """Abstraction around RPi.GPIO for blinky buttons.
 """
 
-import Queue
-
 from authbox.api import BasePinThread, GPIO
+from authbox.compat import queue
+
 
 class Button(BasePinThread):
   """Button hardware abstraction.
@@ -36,7 +36,7 @@ class Button(BasePinThread):
     super(Button, self).__init__(event_queue, config_name, int(input_pin), int(output_pin))
 
     self._on_down = on_down
-    self.blink_command_queue = Queue.Queue()
+    self.blink_command_queue = queue.Queue()
     self.blink_duration = 0.5  # seconds
     self.blinking = False
     if self._on_down:
@@ -57,7 +57,7 @@ class Button(BasePinThread):
         GPIO.output(self.output_pin, True)
       else:
         GPIO.output(self.output_pin, item[1])
-    except Queue.Empty:
+    except queue.Empty:
       if self.blinking:
         # When blinking, invert every timeout expiration (we might have woken
         # up for some other reason, but this appears to work in practice).

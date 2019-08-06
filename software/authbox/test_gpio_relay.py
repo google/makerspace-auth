@@ -16,8 +16,8 @@
 
 import sys
 import unittest
-import Queue
 
+from authbox.compat import queue
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
 from RPi import GPIO
@@ -27,7 +27,7 @@ class RelayTest(unittest.TestCase):
   def setUp(self):
     self.time = fake_gpio_for_testing.FakeTime()
     self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
-    self.q = Queue.Queue()
+    self.q = queue.Queue()
 
   def test_activehigh(self):
     self.b = authbox.gpio_relay.Relay(self.q, 'b', 'ActiveHigh', '1')

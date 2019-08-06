@@ -17,6 +17,7 @@
 """Example using two buttons for "on" and "off" once badged.
 
 """
+from __future__ import print_function
 
 import atexit
 import os
@@ -82,7 +83,7 @@ class Dispatcher(BaseDispatcher):
         self.noise = subprocess.Popen(sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
   def on_button_down(self, source):
-    print "Button down", source
+    print("Button down", source)
     if not self.authorized:
       self.buzzer.beep()
       if self.noise:
@@ -108,7 +109,7 @@ class Dispatcher(BaseDispatcher):
       self.noise = None
 
   def abort(self, source):
-    print "Abort", source
+    print("Abort", source)
     if self.authorized:
       command = self._get_command_line('auth', 'deauth_command', [self.badge_id])
       subprocess.call(command)

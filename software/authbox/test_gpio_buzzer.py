@@ -16,8 +16,8 @@
 
 import sys
 import unittest
-import Queue
 
+from authbox.compat import queue
 import authbox.gpio_buzzer
 from authbox import fake_gpio_for_testing
 
@@ -27,14 +27,14 @@ class BuzzerTest(unittest.TestCase):
     self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
     authbox.gpio_buzzer.time = self.time
 
-    self.q = Queue.Queue()
+    self.q = queue.Queue()
     self.b = authbox.gpio_buzzer.Buzzer(self.q, 'b', '1')
 
   def test_on(self):
     self.time.sleep(2)
     self.b.on()
     self.b.run_inner(False)
-    self.assertRaises(Queue.Empty, self.b.run_inner, False)
+    self.assertRaises(queue.Empty, self.b.run_inner, False)
     self.fake.compare_log([
         (0, 1, False), (2, 1, True)])
 
@@ -42,7 +42,7 @@ class BuzzerTest(unittest.TestCase):
     self.time.sleep(2)
     self.b.off()
     self.b.run_inner(False)
-    self.assertRaises(Queue.Empty, self.b.run_inner, False)
+    self.assertRaises(queue.Empty, self.b.run_inner, False)
     self.fake.compare_log([
         (0, 1, False), (2, 1, False)])
 
@@ -51,7 +51,7 @@ class BuzzerTest(unittest.TestCase):
     self.b.run_inner(False)
     self.b.on()
     self.b.run_inner(False)
-    self.assertRaises(Queue.Empty, self.b.run_inner, False)
+    self.assertRaises(queue.Empty, self.b.run_inner, False)
     self.fake.compare_log([
         (0, 1, False), (0, 1, True), (0.3, 1, False),
         (0.6, 1, True)])

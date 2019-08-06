@@ -23,7 +23,7 @@ import authbox.config
 import authbox.gpio_button
 
 
-SAMPLE_CONFIG = '''
+SAMPLE_CONFIG = b'''
 [pins]
 button_a = Button:1:2
 button_b = Button

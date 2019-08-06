@@ -16,8 +16,8 @@
 
 import sys
 import unittest
-import Queue
 
+from authbox.compat import queue
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
 from RPi import GPIO
@@ -26,7 +26,7 @@ from RPi import GPIO
 class BlinkTest(unittest.TestCase):
   def setUp(self):
     self.fake = fake_gpio_for_testing.FakeGPIO()
-    self.q = Queue.Queue()
+    self.q = queue.Queue()
     self.b = authbox.gpio_button.Button(self.q, 'b', '1', '2', on_down=self.on_down)
 
   def on_down(self):

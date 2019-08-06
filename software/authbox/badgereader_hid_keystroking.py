@@ -15,6 +15,8 @@
 """Wrapper for pcProx RDR-6081AKU and compatible.
 """
 
+from __future__ import print_function
+
 import evdev
 
 from authbox.api import BaseDerivedThread, NoMatchingDevice
@@ -102,9 +104,9 @@ class HIDKeystrokingReader(BaseDerivedThread):
     rfid = ''
     capitalized = 0
     device = self.f
-    print "About to read_input"
+    print("About to read_input")
     for event in device.read_loop():
-      #print "read_input event", event
+      #print("read_input event", event)
       data = evdev.categorize(event)
       if event.type == evdev.ecodes.EV_KEY and data.keystate == 1:
         if data.scancode == self.LSHIFT_SCANCODE:
@@ -117,7 +119,7 @@ class HIDKeystrokingReader(BaseDerivedThread):
             capitalized ^= 1
           else:
             rfid += self.scancodes[data.scancode]
-    print "Badge read:", rfid
+    print("Badge read:", rfid)
     return rfid
 
   def run_inner(self):

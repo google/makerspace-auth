@@ -1,0 +1,4 @@
+fake-rpi
+nose
+coverage
+evdev

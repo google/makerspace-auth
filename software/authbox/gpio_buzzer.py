@@ -14,11 +14,12 @@
 
 """Abstraction around RPi.GPIO for buzzer type outputs.
 """
+from __future__ import print_function
 
-import Queue
 import time
 
 from authbox.api import BasePinThread, GPIO
+from authbox.compat import queue
 
 OFF = 0
 ON = 1
@@ -43,7 +44,7 @@ class Buzzer(BasePinThread):
 
   def __init__(self, event_queue, config_name, output_pin):
     super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
-    self.set_queue = Queue.Queue(None)
+    self.set_queue = queue.Queue()
 
     GPIO.output(self.output_pin, False)
 
@@ -56,27 +57,27 @@ class Buzzer(BasePinThread):
       GPIO.output(self.output_pin, True)
     elif next_mode in (BEEP, BEEPING):
       # As-is, this provides a logic HIGH to make a 4KHz sound on PK-12N40PQ;
-      print "Beeping"
+      print("Beeping")
       while True:
         if not self.set_queue.empty():
-          print "Done beeping"
+          print("Done beeping")
           break
         GPIO.output(self.output_pin, True)
         time.sleep(item[1])
         GPIO.output(self.output_pin, False)
         time.sleep(item[2])
         if next_mode == BEEP:
-	  break
-        print "...more beep"
+          break
+        print("...more beep")
     else:
-      print "Error", next_mode
+      print("Error", next_mode)
 
   def _clear(self):
     # This looks like a busy-wait, but isn't because of the exception.
     try:
       while True:
         self.set_queue.get(block=False)
-    except Queue.Empty:
+    except queue.Empty:
       pass
 
   def beepbeep(self, on_time=0.3, off_time=0.3):

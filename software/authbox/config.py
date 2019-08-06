@@ -17,7 +17,8 @@
 """
 import re
 import os.path
-import ConfigParser
+
+from authbox.compat import configparser
 
 
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
@@ -63,7 +64,7 @@ class CycleError(Exception):
 class Config(object):
   # TODO more than one filename?
   def __init__(self, filename):
-    self._config = ConfigParser.RawConfigParser()
+    self._config = configparser.RawConfigParser()
     if filename is not None:
       if not self._config.read([os.path.expanduser(filename)]):
         # N.b. if config existed but was invalid, we'd get
