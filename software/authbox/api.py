@@ -37,6 +37,7 @@ from authbox.compat import queue
 
 CLASS_REGISTRY = [
     'authbox.badgereader_hid_keystroking.HIDKeystrokingReader',
+    'authbox.badgereader_wiegand_gpio.WiegandGPIOReader',
     'authbox.gpio_button.Button',
     'authbox.gpio_relay.Relay',
     'authbox.gpio_buzzer.Buzzer',
@@ -138,6 +139,21 @@ class BasePinThread(BaseDerivedThread):
       GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     if self.output_pin:
       GPIO.setup(self.output_pin, GPIO.OUT, initial=initial_output)
+
+
+class BaseWiegandPinThread(BaseDerivedThread):
+  def __init__(self, event_queue, config_name, d0_pin, d1_pin):
+    super(BaseWiegandPinThread, self).__init__(event_queue, config_name)
+
+    self.d0_pin = d0_pin
+    self.d1_pin = d1_pin
+
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)  # for reusing pins
+    if self.d0_pin:
+      GPIO.setup(self.d0_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    if self.d1_pin:
+      GPIO.setup(self.d1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 class NoMatchingDevice(Exception):
