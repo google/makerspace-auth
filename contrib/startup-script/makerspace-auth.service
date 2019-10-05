@@ -1,0 +1,24 @@
+[Unit]
+Description=Makerspace Auth RFID system
+Documentation=https://github.com/google/makerspace-auth/blob/master/README.md
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python doorauth.py
+WorkingDirectory=/home/pi/makerspace-auth/software
+User=pi
+Group=pi
+Restart=always
+RestartSec=2s
+Environment=PYTHONUNBUFFERED=true
+
+# Restrict system mechanisms which are unneeded by Makerspace Auth
+NoNewPrivileges=true
+ProtectSystem=full
+RestrictRealtime=true
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
