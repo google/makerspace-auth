@@ -25,14 +25,14 @@ from RPi import GPIO
 
 
 class BadgereaderWiegandGPIOTest(unittest.TestCase):
-  def setup(self):
+  def setUp(self):
     self.fake = fake_gpio_for_testing.FakeGPIO()
-    self.q = Queue.Queue()
+    self.q = queue.Queue()
     self.b = authbox.badgereader_wiegand_gpio.WiegandGPIOReader(
         self.q,
         'b',
-        '7',
-        '13',
+        '0',
+        '1',
         on_scan=self.on_scan,
     )
 
