@@ -90,13 +90,12 @@ class WiegandGPIOReader(BaseWiegandPinThread):
     Returns:
       badge value as string of 0's and 1's.
     """
-    # Wait for a first bit to come in, slightly better than a busy-wait
-    while self.bitqueue.empty():
-        time.sleep(0.001)
+    # Wait for a first bit to come in
+    bit = self.bitqueue.get(block=True)
 
     ## this will currently have a race condition where two cards read back
     ## to back as one giant card
-    bits = []
+    bits = [bit]
     while True:
         try:
             bit = self.bitqueue.get(timeout=self.timeout_in_seconds)
