@@ -27,7 +27,7 @@ from RPi import GPIO
 
 class ImpatientQueue(queue.Queue):
     def __init__(self, fake_time):
-        super().__init__()
+        queue.Queue.__init__(self)
         self.time = fake_time
 
     def get(self, block, timeout):
@@ -35,7 +35,7 @@ class ImpatientQueue(queue.Queue):
             print("Advancing", timeout)
             self.time.sleep(timeout)
             raise queue.Empty
-        return super().get(block=block, timeout=timeout)
+        return queue.Queue.get(self, block=block, timeout=timeout)
 
 
 class BlinkTest(unittest.TestCase):
