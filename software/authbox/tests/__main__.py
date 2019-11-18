@@ -1,3 +1,4 @@
+# flake8: noqa
 from unittest import main
 
 from authbox.tests.test_api import (

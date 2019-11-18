@@ -14,7 +14,6 @@
 
 """Tests for authbox.badgereader_hid_keystroking"""
 
-import sys
 import unittest
 
 import authbox.badgereader_hid_keystroking

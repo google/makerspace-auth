@@ -14,7 +14,6 @@
 
 """Tests for authbox.gpio_buzzer"""
 
-import sys
 import unittest
 
 import authbox.gpio_buzzer

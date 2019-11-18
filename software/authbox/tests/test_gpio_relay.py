@@ -14,13 +14,11 @@
 
 """Tests for authbox.gpio_relay"""
 
-import sys
 import unittest
 
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
-from RPi import GPIO
 
 
 class RelayTest(unittest.TestCase):

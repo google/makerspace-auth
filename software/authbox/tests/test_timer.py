@@ -14,7 +14,6 @@
 
 """Tests for authbox.timer"""
 
-import sys
 import unittest
 
 import authbox.timer

@@ -14,7 +14,6 @@
 
 """Tests for authbox.api"""
 
-import sys
 import tempfile
 import unittest
 
@@ -40,7 +39,9 @@ class ClassRegistryTest(unittest.TestCase):
     def test_all_names_importable(self):
         for c in authbox.api.CLASS_REGISTRY:
             cls = authbox.api._import(c)
-            assert isinstance(c, object)
+            assert issubclass(
+                cls, (authbox.api.BasePinThread, authbox.api.BaseDerivedThread)
+            ), (c, cls, cls.__bases__)
 
 
 class DispatcherTest(unittest.TestCase):

@@ -31,7 +31,8 @@ except ImportError:
     warnings.warn("Using fake_rpi suitable for testing only!")
     del warnings
 
-    import sys, fake_rpi
+    import sys
+    import fake_rpi
 
     sys.modules["RPi"] = fake_rpi.RPi
     del sys, fake_rpi

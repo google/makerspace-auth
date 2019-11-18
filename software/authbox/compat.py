@@ -18,10 +18,10 @@ Ease Python 3 transition by handling all the python2 differences in one place.
 
 try:
     import Queue as queue
-except:
-    import queue
+except ImportError:
+    import queue  # noqa: F401
 
 try:
     import ConfigParser as configparser
-except:
-    import configparser
+except ImportError:
+    import configparser  # noqa: F401

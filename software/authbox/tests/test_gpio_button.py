@@ -14,8 +14,6 @@
 
 """Tests for authbox.gpio_button"""
 
-import sys
-import time
 import unittest
 from functools import partial
 

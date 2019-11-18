@@ -17,8 +17,6 @@
 
 from __future__ import division, print_function
 
-import time
-
 from authbox.api import GPIO, BaseWiegandPinThread
 from authbox.compat import queue
 
@@ -34,7 +32,7 @@ class WiegandGPIOReader(BaseWiegandPinThread):
     [pins]
     name = WiegandGPIOReader:7:13
 
-  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also 
+  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also
   physical numbering).  In this configuration the 6 pin J5 connector will be
   structured as follows:
       Pin 1: D0

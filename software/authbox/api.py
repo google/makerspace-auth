@@ -30,9 +30,9 @@ import traceback
 import types
 
 from authbox.compat import queue
-
-# This simplifies imports for other modules that are already importing from api.
 from RPi import GPIO
+
+# The line above simplifies imports for other modules that are already importing from api.
 
 # TODO give each object a logger and use that instead of prints
 
@@ -124,7 +124,7 @@ class BaseDerivedThread(threading.Thread):
         while True:
             try:
                 self.run_inner()
-            except Exception as e:
+            except Exception:
                 traceback.print_exc()
 
 
