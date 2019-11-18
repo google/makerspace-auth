@@ -4,16 +4,19 @@ For the basic walkthrough of how this code works, see https://google.github.io/m
 
 Prerequisites:
 
-1. Python 2.7 or 3.x
+1. Python 2.7 or 3.6+
 1. `evdev` (python-evdev on Debian)
 1. `RPi` module (or `pip install fake-rpi` for testing)
 1. Make sure you're in the 'input' group to use evdev
 1. Make sure you're in the gpio group if you're on a Pi
 
-Test prerequisites:
+Developing:
 
-1. `nosetests` (python-nose Debian)
-1. `coverage` (python-coverage on Debian)
+1. The easiest way is to run `make setup` and then `. .venv/bin/activate`.
+1. You can also run the tests with tox, using `tox -p all`
+1. The code is formatted with isort+black, run `make lint` and/or `make format`
+   before sending pull requests.
+
 
 ## Protocol
 
