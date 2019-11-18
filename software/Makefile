@@ -1,6 +1,6 @@
 PYTHON?=python
 NOSE?=$(PYTHON) -m nose
-SOURCES=authbox
+SOURCES=authbox setup.py
 
 .PHONY: venv
 venv:

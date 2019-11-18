@@ -16,6 +16,8 @@
 Authbox client modules.
 """
 
+__version__ = "1.0.0"
+
 # To facilitate testing, this makes things importable on non-Raspberry Pi
 # This module isn't perfect (for example, input() doesn't read what output()
 # writes), but at least supports the api, and we can mock where it matters.

@@ -15,6 +15,9 @@ cover
 .coverage
 .venv
 .tox
+build
+dist
+*.egg-info
 
 # ignore files called out in sample_auth_check.sh to avoid issues
 authorized.txt
