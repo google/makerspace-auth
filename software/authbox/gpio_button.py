@@ -32,11 +32,11 @@ class Button(BasePinThread):
   probably need a different class.
   """
 
-  def __init__(self, event_queue, config_name, input_pin, output_pin, on_down=None):
+  def __init__(self, event_queue, config_name, input_pin, output_pin, on_down=None, blink_command_queue_cls=queue.Queue):
     super(Button, self).__init__(event_queue, config_name, int(input_pin), int(output_pin))
 
     self._on_down = on_down
-    self.blink_command_queue = queue.Queue()
+    self.blink_command_queue = blink_command_queue_cls()
     self.blink_duration = 0.5  # seconds
     self.blinking = False
     if self._on_down:

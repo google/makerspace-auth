@@ -46,21 +46,9 @@ class FakeGPIOTest(unittest.TestCase):
   def test_compare_log_with_regular_time(self):
     gpio = fake_gpio_for_testing.FakeGPIO()
     gpio.output(1, True)
-    time.sleep(1.5)
+    time.sleep(0.001)
     gpio.output(1, False)
+    # This is a much-truncated version of the above test, because I'm pretty
+    # confident in it working right and this makes the tests much faster.
     gpio.compare_log([
-        (0, 1, True), (1.5, 1, False)])
-    # Timestamps are approximate (mainly for use with real time, instead of
-    # fake_time)
-    gpio.compare_log([
-        (0, 1, True), (1.55, 1, False)])
-    # Any of these are reasons for compare_log to fail
-    # value
-    self.assertRaises(Exception, gpio.compare_log, [
-        (0, 1, True), (1.5, 1, True)])
-    # time
-    self.assertRaises(Exception, gpio.compare_log, [
-        (0, 1, True), (2.0, 1, False)])
-    # pin number
-    self.assertRaises(Exception, gpio.compare_log, [
-        (0, 1, True), (1.5, 2, False)])
+        (0, 1, True), (0.001, 1, False)])

@@ -30,23 +30,23 @@ class Timer(BaseDerivedThread):
     self.cancel_condition = threading.Condition()
     self.callback = callback
 
-  def run(self):
+  def run_inner(self):
     # TODO: This is not robust to spurious wakeups, see details in
     # https://bugs.python.org/issue1175933 that
-    while True:
-      # TODO add a KILL sentinel
-      timeout = self.set_queue.get(block=True)
-      print(self, "got", timeout)
-      with self.cancel_condition:
-        # Instead of a sleep we just pass it as a timeout here (so it's
-        # interruptable if someone sets cancel_condition)
-        t0 = time.time()
-        self.cancel_condition.wait(timeout)
-        expired = (time.time()) - t0 >= timeout
-        print(self, "expired", expired)
-        if expired:
-          # The idea here is that we call callback once per set_queue item
-          self.event_queue.put((self.callback, self.config_name))
+
+    # TODO add a KILL sentinel
+    timeout = self.set_queue.get(block=True)
+    print(self, "got", timeout)
+    with self.cancel_condition:
+      # Instead of a sleep we just pass it as a timeout here (so it's
+      # interruptable if someone sets cancel_condition)
+      t0 = time.time()
+      self.cancel_condition.wait(timeout)
+      expired = (time.time()) - t0 >= timeout
+      print(self, "expired", expired)
+      if expired:
+        # The idea here is that we call callback once per set_queue item
+        self.event_queue.put((self.callback, self.config_name))
 
   def set(self, delay):
     # TODO this should replace

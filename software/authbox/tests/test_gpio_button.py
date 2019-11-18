@@ -14,7 +14,9 @@
 
 """Tests for authbox.gpio_button"""
 
+from functools import partial
 import sys
+import time
 import unittest
 
 from authbox.compat import queue
@@ -22,12 +24,28 @@ import authbox.gpio_button
 from authbox import fake_gpio_for_testing
 from RPi import GPIO
 
+class ImpatientQueue(queue.Queue):
+  def __init__(self, fake_time):
+    super().__init__()
+    self.time = fake_time
+
+  def get(self, block, timeout):
+    if self.empty():
+      print("Advancing", timeout)
+      self.time.sleep(timeout)
+      raise queue.Empty
+    return super().get(block=block, timeout=timeout)
 
 class BlinkTest(unittest.TestCase):
   def setUp(self):
-    self.fake = fake_gpio_for_testing.FakeGPIO()
+    self.time = fake_gpio_for_testing.FakeTime()
+    self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
     self.q = queue.Queue()
-    self.b = authbox.gpio_button.Button(self.q, 'b', '1', '2', on_down=self.on_down)
+    self.b = authbox.gpio_button.Button(
+        self.q, 'b', '1', '2',
+        on_down=self.on_down,
+        blink_command_queue_cls=partial(ImpatientQueue, self.time)
+    )
 
   def on_down(self):
     pass
@@ -43,9 +61,6 @@ class BlinkTest(unittest.TestCase):
     self.assertEqual(self.q.get(block=False), (self.on_down, self.b))
 
   def test_blinking_thread(self):
-    # TODO: Improve this test to not take 1.5 seconds of wall time by faking
-    # Queue.get timeouts.
-    self.b.start()
     self.b.blink()
     for i in range(4):
       self.b.run_inner()

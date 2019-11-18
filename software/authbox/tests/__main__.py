@@ -10,6 +10,7 @@ from authbox.tests.test_fake_gpio import FakeGPIOTest
 from authbox.tests.test_gpio_button import BlinkTest
 from authbox.tests.test_gpio_buzzer import BuzzerTest
 from authbox.tests.test_gpio_relay import RelayTest
+from authbox.tests.test_timer import TimerTest
 
 from unittest import main
-main()
+main(buffer=True)
