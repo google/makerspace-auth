@@ -59,9 +59,9 @@ class FakeGPIO(object):
     def compare_log(self, expected_log):
         """Check that the correct log entries exist in the right order.
 
-    Raises:
-      Exception: if that is not true.
-    """
+        Raises:
+          Exception: if that is not true.
+        """
         # Entries must appear in the correct order, and only count for one.
         print("Expecting", expected_log)
         print("Actual", self.log)

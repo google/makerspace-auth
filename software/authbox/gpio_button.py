@@ -22,15 +22,15 @@ from authbox.compat import queue
 class Button(BasePinThread):
     """Button hardware abstraction.
 
-  A button is defined in config as:
+    A button is defined in config as:
 
-    [pins]
-    name = Button:1:2
+      [pins]
+      name = Button:1:2
 
-  where 1 is the active-low input pin (physical numbering), and 2 is the output
-  pin (also physical numbering).  If you have another kind of button, you
-  probably need a different class.
-  """
+    where 1 is the active-low input pin (physical numbering), and 2 is the output
+    pin (also physical numbering).  If you have another kind of button, you
+    probably need a different class.
+    """
 
     def __init__(
         self,
@@ -78,17 +78,17 @@ class Button(BasePinThread):
     def blink(self):
         """Blink the light indefinitely.
 
-    The time for each on or off pulse is `blink_duration`."""
+        The time for each on or off pulse is `blink_duration`."""
         self.blink_command_queue.put((True,))
 
     def on(self):
         """Turn the light (if present) on indefinitely.
 
-    If the light is currently in the blink state, it stops blinking."""
+        If the light is currently in the blink state, it stops blinking."""
         self.blink_command_queue.put((False, True))
 
     def off(self):
         """Turn the light (if present) off indefinitely.
 
-    If the light is currently in the blink state, it stops blinkin."""
+        If the light is currently in the blink state, it stops blinkin."""
         self.blink_command_queue.put((False, False))

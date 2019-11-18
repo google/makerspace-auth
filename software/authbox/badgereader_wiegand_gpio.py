@@ -27,31 +27,31 @@ DEFAULT_TIMEOUT_IN_MS = 15
 class WiegandGPIOReader(BaseWiegandPinThread):
     """Badge reader hardware abstraction.
 
-  A Wiegand GPIO badge reader is defined in config as:
+    A Wiegand GPIO badge reader is defined in config as:
 
-    [pins]
-    name = WiegandGPIOReader:7:13
+      [pins]
+      name = WiegandGPIOReader:7:13
 
-  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also
-  physical numbering).  In this configuration the 6 pin J5 connector will be
-  structured as follows:
-      Pin 1: D0
-      Pin 2: D1
-      Pin 3: No connection
-      Pin 4: Ground
-      Pin 5: 12v
-      Pin 6: No connection
+    where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also
+    physical numbering).  In this configuration the 6 pin J5 connector will be
+    structured as follows:
+        Pin 1: D0
+        Pin 2: D1
+        Pin 3: No connection
+        Pin 4: Ground
+        Pin 5: 12v
+        Pin 6: No connection
 
-  Pin 6 is used for the switched +12v provided by the ULN2003AD chip
-  (L5_LOGIC).  As we want to constantly power the RFID reader, there is no need
-  to populate Pin 6.
+    Pin 6 is used for the switched +12v provided by the ULN2003AD chip
+    (L5_LOGIC).  As we want to constantly power the RFID reader, there is no need
+    to populate Pin 6.
 
-  It should also be noted that most GPIO based RFID badge readers operate at 5v
-  logic, so one should use care when connecting them to the host.  Most readers
-  communicate only from the reader to the host.  If this is the case a simple
-  voltage divider is sufficient to protect the GPIO pins on the host, in the
-  event that two way communication is needed a level shifter should be used.
-  """
+    It should also be noted that most GPIO based RFID badge readers operate at 5v
+    logic, so one should use care when connecting them to the host.  Most readers
+    communicate only from the reader to the host.  If this is the case a simple
+    voltage divider is sufficient to protect the GPIO pins on the host, in the
+    event that two way communication is needed a level shifter should be used.
+    """
 
     def __init__(
         self,
@@ -86,15 +86,15 @@ class WiegandGPIOReader(BaseWiegandPinThread):
 
     def read_input(self):
         """
-    This thread will perform a blocking read.  If there are no bits coming in
-    the stream, this will actually wait for them to start coming in.
+        This thread will perform a blocking read.  If there are no bits coming in
+        the stream, this will actually wait for them to start coming in.
 
-    Args:
-      None
+        Args:
+          None
 
-    Returns:
-      badge value as string of 0's and 1's.
-    """
+        Returns:
+          badge value as string of 0's and 1's.
+        """
         # Wait for a first bit to come in
         bit = self.bitqueue.get(block=True)
 

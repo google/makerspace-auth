@@ -28,20 +28,20 @@ TIME_RE = re.compile(r"([\d.]+)([smhd])")
 def recursive_config_lookup(value, config, section, stack=None):
     """Looks up format references in ConfigParser objects.
 
-  For the sample config:
+    For the sample config:
 
-      [s]
-      k = v
+        [s]
+        k = v
 
-  Args:
-    value: The format string, e.g. passing '{k}' (and 's' for section) will return 'v'
-    config: A ConfigParser object.
-    section: The section in which values will be looked up.
-    stack: Omit for client call; will be provided when recursing to check for
-      infinite loops.
-  Returns:
-    A string with references replaced.
-  """
+    Args:
+      value: The format string, e.g. passing '{k}' (and 's' for section) will return 'v'
+      config: A ConfigParser object.
+      section: The section in which values will be looked up.
+      stack: Omit for client call; will be provided when recursing to check for
+        infinite loops.
+    Returns:
+      A string with references replaced.
+    """
     if stack is None:
         stack = []
     # Typically these are shallow, so this is efficient enough
@@ -86,17 +86,17 @@ class Config(object):
     def parse_time(cls, time_string):
         """Parse a time string.
 
-    Allowable suffixes include:
+        Allowable suffixes include:
 
-      s: seconds
-      m: minutes
-      h: hours
-      d: days
+          s: seconds
+          m: minutes
+          h: hours
+          d: days
 
-    and can be mixed, e.g. 1m30s.
+        and can be mixed, e.g. 1m30s.
 
-    Returns the value in seconds, as an int if possible, otherwise a float.
-    """
+        Returns the value in seconds, as an int if possible, otherwise a float.
+        """
         units = {
             "s": 1,
             "m": 60,
