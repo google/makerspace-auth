@@ -22,13 +22,16 @@ __version__ = "1.0.0"
 # This module isn't perfect (for example, input() doesn't read what output()
 # writes), but at least supports the api, and we can mock where it matters.
 try:
-  from RPi import GPIO
-  del GPIO
-except ImportError:
-  import warnings
-  warnings.warn('Using fake_rpi suitable for testing only!')
-  del warnings
+    from RPi import GPIO
 
-  import sys, fake_rpi
-  sys.modules['RPi'] = fake_rpi.RPi
-  del sys, fake_rpi
+    del GPIO
+except ImportError:
+    import warnings
+
+    warnings.warn("Using fake_rpi suitable for testing only!")
+    del warnings
+
+    import sys, fake_rpi
+
+    sys.modules["RPi"] = fake_rpi.RPi
+    del sys, fake_rpi

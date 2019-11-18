@@ -14,55 +14,61 @@
 
 """Tests for authbox.gpio_button"""
 
-from functools import partial
 import sys
 import time
 import unittest
+from functools import partial
 
-from authbox.compat import queue
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
+from authbox.compat import queue
 from RPi import GPIO
 
-class ImpatientQueue(queue.Queue):
-  def __init__(self, fake_time):
-    super().__init__()
-    self.time = fake_time
 
-  def get(self, block, timeout):
-    if self.empty():
-      print("Advancing", timeout)
-      self.time.sleep(timeout)
-      raise queue.Empty
-    return super().get(block=block, timeout=timeout)
+class ImpatientQueue(queue.Queue):
+    def __init__(self, fake_time):
+        super().__init__()
+        self.time = fake_time
+
+    def get(self, block, timeout):
+        if self.empty():
+            print("Advancing", timeout)
+            self.time.sleep(timeout)
+            raise queue.Empty
+        return super().get(block=block, timeout=timeout)
+
 
 class BlinkTest(unittest.TestCase):
-  def setUp(self):
-    self.time = fake_gpio_for_testing.FakeTime()
-    self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
-    self.q = queue.Queue()
-    self.b = authbox.gpio_button.Button(
-        self.q, 'b', '1', '2',
-        on_down=self.on_down,
-        blink_command_queue_cls=partial(ImpatientQueue, self.time)
-    )
+    def setUp(self):
+        self.time = fake_gpio_for_testing.FakeTime()
+        self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
+        self.q = queue.Queue()
+        self.b = authbox.gpio_button.Button(
+            self.q,
+            "b",
+            "1",
+            "2",
+            on_down=self.on_down,
+            blink_command_queue_cls=partial(ImpatientQueue, self.time),
+        )
 
-  def on_down(self):
-    pass
+    def on_down(self):
+        pass
 
-  def test_on(self):
-    self.b.on()
-    self.b.run_inner()
-    # 2 is output
-    self.fake.compare_log([(0, 2, True)])
-    # 1 is input
-    self.assertEqual(GPIO.FALLING, self.fake.events[1][0])
-    self.fake.events[1][1](None)
-    self.assertEqual(self.q.get(block=False), (self.on_down, self.b))
+    def test_on(self):
+        self.b.on()
+        self.b.run_inner()
+        # 2 is output
+        self.fake.compare_log([(0, 2, True)])
+        # 1 is input
+        self.assertEqual(GPIO.FALLING, self.fake.events[1][0])
+        self.fake.events[1][1](None)
+        self.assertEqual(self.q.get(block=False), (self.on_down, self.b))
 
-  def test_blinking_thread(self):
-    self.b.blink()
-    for i in range(4):
-      self.b.run_inner()
-    self.fake.compare_log([
-        (0.0, 2, True), (0.5, 2, False), (1.0, 2, True), (1.5, 2, False)])
+    def test_blinking_thread(self):
+        self.b.blink()
+        for i in range(4):
+            self.b.run_inner()
+        self.fake.compare_log(
+            [(0.0, 2, True), (0.5, 2, False), (1.0, 2, True), (1.5, 2, False)]
+        )

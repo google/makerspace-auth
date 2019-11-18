@@ -17,31 +17,31 @@
 import sys
 import unittest
 
-from authbox.compat import queue
 import authbox.timer
 from authbox import fake_gpio_for_testing
+from authbox.compat import queue
 
 
 class TimerTest(unittest.TestCase):
-  def setUp(self):
-    self.fake = fake_gpio_for_testing.FakeGPIO()
-    self.q = queue.Queue()
-    self.t = authbox.timer.Timer(self.q, 't', self.callback)
+    def setUp(self):
+        self.fake = fake_gpio_for_testing.FakeGPIO()
+        self.q = queue.Queue()
+        self.t = authbox.timer.Timer(self.q, "t", self.callback)
 
-  def callback(self, config_name):
-    pass
+    def callback(self, config_name):
+        pass
 
-  def test_set_exception(self):
-    self.t.set(1)
-    with self.assertRaises(Exception):
-      self.t.set(1)
+    def test_set_exception(self):
+        self.t.set(1)
+        with self.assertRaises(Exception):
+            self.t.set(1)
 
-  def test_set(self):
-    self.t.set(0.001)
-    self.t.run_inner()
-    self.assertEqual(1, self.q.qsize())
+    def test_set(self):
+        self.t.set(0.001)
+        self.t.run_inner()
+        self.assertEqual(1, self.q.qsize())
 
-  def test_cancel_drains_queue(self):
-    self.t.set_queue.put(None)
-    self.t.cancel()
-    self.assertTrue(self.t.set_queue.empty())
+    def test_cancel_drains_queue(self):
+        self.t.set_queue.put(None)
+        self.t.cancel()
+        self.assertTrue(self.t.set_queue.empty())

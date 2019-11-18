@@ -25,42 +25,37 @@ from RPi import GPIO
 
 
 class BadgereaderWiegandGPIOTest(unittest.TestCase):
-  def setUp(self):
-    self.fake = fake_gpio_for_testing.FakeGPIO()
-    self.q = queue.Queue()
-    self.b = authbox.badgereader_wiegand_gpio.WiegandGPIOReader(
-        self.q,
-        'b',
-        '0',
-        '1',
-        on_scan=self.on_scan,
-    )
+    def setUp(self):
+        self.fake = fake_gpio_for_testing.FakeGPIO()
+        self.q = queue.Queue()
+        self.b = authbox.badgereader_wiegand_gpio.WiegandGPIOReader(
+            self.q, "b", "0", "1", on_scan=self.on_scan,
+        )
 
-  def on_scan(self, badge_number):
-    pass
+    def on_scan(self, badge_number):
+        pass
 
-  def test_simple_scan(self):
-    self.fake.press(1, GPIO.FALLING)
-    self.fake.press(0, GPIO.FALLING)
-    self.b.run_inner()
-    self.assertEqual(self.q.get(block=False), (self.on_scan, "10"))
+    def test_simple_scan(self):
+        self.fake.press(1, GPIO.FALLING)
+        self.fake.press(0, GPIO.FALLING)
+        self.b.run_inner()
+        self.assertEqual(self.q.get(block=False), (self.on_scan, "10"))
 
-  def test_blocks_until_scan(self):
+    def test_blocks_until_scan(self):
+        def add_bits_later():
+            time.sleep(0.2)
+            self.fake.press(1, GPIO.FALLING)
+            self.fake.press(0, GPIO.FALLING)
 
-    def add_bits_later():
-      time.sleep(0.2)
-      self.fake.press(1, GPIO.FALLING)
-      self.fake.press(0, GPIO.FALLING)
+        t = threading.Thread(target=add_bits_later)
+        t.start()
+        self.b.run_inner()
+        self.assertEqual(self.q.get(block=False), (self.on_scan, "10"))
 
-    t = threading.Thread(target=add_bits_later)
-    t.start()
-    self.b.run_inner()
-    self.assertEqual(self.q.get(block=False), (self.on_scan, "10"))
-
-  def test_limited_queue_size(self):
-    for i in range(500):
-      self.fake.press(0, GPIO.FALLING)
-    self.b.run_inner()
-    self.assertEqual(self.q.get(block=False), (self.on_scan, "0" * 100))
-    # Make sure that state is reset.
-    self.assertTrue(self.b.bitqueue.empty())
+    def test_limited_queue_size(self):
+        for i in range(500):
+            self.fake.press(0, GPIO.FALLING)
+        self.b.run_inner()
+        self.assertEqual(self.q.get(block=False), (self.on_scan, "0" * 100))
+        # Make sure that state is reset.
+        self.assertTrue(self.b.bitqueue.empty())

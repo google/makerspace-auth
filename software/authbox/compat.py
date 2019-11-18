@@ -17,11 +17,11 @@ Ease Python 3 transition by handling all the python2 differences in one place.
 """
 
 try:
-  import Queue as queue
+    import Queue as queue
 except:
-  import queue
+    import queue
 
 try:
-  import ConfigParser as configparser
+    import ConfigParser as configparser
 except:
-  import configparser
+    import configparser
