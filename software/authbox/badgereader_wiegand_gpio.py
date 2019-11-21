@@ -15,27 +15,24 @@
 """Wiegand based badge reader directly connected via GPIO
 """
 
-from __future__ import print_function, division
+from __future__ import division, print_function
 
-import time
-
-from authbox.api import BaseWiegandPinThread, GPIO
+from authbox.api import GPIO, BaseWiegandPinThread
 from authbox.compat import queue
-
 
 DEFAULT_QUEUE_SIZE = 100  # more than enough for a scan
 DEFAULT_TIMEOUT_IN_MS = 15
 
 
 class WiegandGPIOReader(BaseWiegandPinThread):
-  """Badge reader hardware abstraction.
+    """Badge reader hardware abstraction.
 
   A Wiegand GPIO badge reader is defined in config as:
 
     [pins]
     name = WiegandGPIOReader:7:13
 
-  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also 
+  where 7 is the D0 pin (physical numbering), and 13 is the D1 pin (also
   physical numbering).  In this configuration the 6 pin J5 connector will be
   structured as follows:
       Pin 1: D0
@@ -56,31 +53,39 @@ class WiegandGPIOReader(BaseWiegandPinThread):
   event that two way communication is needed a level shifter should be used.
   """
 
-  def __init__(self, event_queue, config_name, d0_pin, d1_pin, on_scan=None,
-               queue_size=DEFAULT_QUEUE_SIZE,
-               timeout_in_ms=DEFAULT_TIMEOUT_IN_MS):
-    super(WiegandGPIOReader, self).__init__(
-        event_queue, config_name, int(d0_pin), int(d1_pin))
-    self._on_scan = on_scan
-    # The limited-size queue protects from a slow leak in case of deadlock, so
-    # we can detect and output something (just a print for now)
-    self.bitqueue = queue.Queue(int(queue_size))
-    self.timeout_in_seconds = float(timeout_in_ms) / 1000
+    def __init__(
+        self,
+        event_queue,
+        config_name,
+        d0_pin,
+        d1_pin,
+        on_scan=None,
+        queue_size=DEFAULT_QUEUE_SIZE,
+        timeout_in_ms=DEFAULT_TIMEOUT_IN_MS,
+    ):
+        super(WiegandGPIOReader, self).__init__(
+            event_queue, config_name, int(d0_pin), int(d1_pin)
+        )
+        self._on_scan = on_scan
+        # The limited-size queue protects from a slow leak in case of deadlock, so
+        # we can detect and output something (just a print for now)
+        self.bitqueue = queue.Queue(int(queue_size))
+        self.timeout_in_seconds = float(timeout_in_ms) / 1000
 
-    if self._on_scan:
-        GPIO.add_event_detect(self.d0_pin, GPIO.FALLING, callback=self.decode)
-        GPIO.add_event_detect(self.d1_pin, GPIO.FALLING, callback=self.decode)
+        if self._on_scan:
+            GPIO.add_event_detect(self.d0_pin, GPIO.FALLING, callback=self.decode)
+            GPIO.add_event_detect(self.d1_pin, GPIO.FALLING, callback=self.decode)
 
-  def decode(self, channel):
-    bit = "0" if channel == self.d0_pin else "1"
-    try:
-      self.bitqueue.put_nowait(bit)
-    except queue.Full:
-      # This shouldn't happen.
-      print("{name} BUG: QUEUE FULL".format(name=self.__class__.__name__))
+    def decode(self, channel):
+        bit = "0" if channel == self.d0_pin else "1"
+        try:
+            self.bitqueue.put_nowait(bit)
+        except queue.Full:
+            # This shouldn't happen.
+            print("{name} BUG: QUEUE FULL".format(name=self.__class__.__name__))
 
-  def read_input(self):
-    """
+    def read_input(self):
+        """
     This thread will perform a blocking read.  If there are no bits coming in
     the stream, this will actually wait for them to start coming in.
 
@@ -90,21 +95,21 @@ class WiegandGPIOReader(BaseWiegandPinThread):
     Returns:
       badge value as string of 0's and 1's.
     """
-    # Wait for a first bit to come in
-    bit = self.bitqueue.get(block=True)
+        # Wait for a first bit to come in
+        bit = self.bitqueue.get(block=True)
 
-    ## this will currently have a race condition where two cards read back
-    ## to back as one giant card
-    bits = [bit]
-    while True:
-        try:
-            bit = self.bitqueue.get(timeout=self.timeout_in_seconds)
-        except queue.Empty:
-            break
-        bits.append(bit)
+        ## this will currently have a race condition where two cards read back
+        ## to back as one giant card
+        bits = [bit]
+        while True:
+            try:
+                bit = self.bitqueue.get(timeout=self.timeout_in_seconds)
+            except queue.Empty:
+                break
+            bits.append(bit)
 
-    return ''.join(bits)
+        return "".join(bits)
 
-  def run_inner(self):
-    line = self.read_input()
-    self.event_queue.put((self._on_scan, line))
+    def run_inner(self):
+        line = self.read_input()
+        self.event_queue.put((self._on_scan, line))

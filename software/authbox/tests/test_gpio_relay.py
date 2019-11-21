@@ -14,34 +14,27 @@
 
 """Tests for authbox.gpio_relay"""
 
-import sys
 import unittest
 
-from authbox.compat import queue
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
-from RPi import GPIO
+from authbox.compat import queue
 
 
 class RelayTest(unittest.TestCase):
-  def setUp(self):
-    self.time = fake_gpio_for_testing.FakeTime()
-    self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
-    self.q = queue.Queue()
+    def setUp(self):
+        self.time = fake_gpio_for_testing.FakeTime()
+        self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
+        self.q = queue.Queue()
 
-  def test_activehigh(self):
-    self.b = authbox.gpio_relay.Relay(self.q, 'b', 'ActiveHigh', '1')
-    self.time.sleep(5)
-    self.b.on()
-    self.fake.compare_log([
-        (0, 1, False), (5, 1, True)])
+    def test_activehigh(self):
+        self.b = authbox.gpio_relay.Relay(self.q, "b", "ActiveHigh", "1")
+        self.time.sleep(5)
+        self.b.on()
+        self.fake.compare_log([(0, 1, False), (5, 1, True)])
 
-  def test_activelow(self):
-    self.b = authbox.gpio_relay.Relay(self.q, 'b', 'ActiveLow', '1')
-    self.time.sleep(5)
-    self.b.on()
-    self.fake.compare_log([
-        (0, 1, True), (5, 1, False)])
-
-
-
+    def test_activelow(self):
+        self.b = authbox.gpio_relay.Relay(self.q, "b", "ActiveLow", "1")
+        self.time.sleep(5)
+        self.b.on()
+        self.fake.compare_log([(0, 1, True), (5, 1, False)])

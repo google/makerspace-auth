@@ -15,19 +15,18 @@
 """Config API for Authbox.
 
 """
-import re
 import os.path
+import re
 
 from authbox.compat import configparser
 
-
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
-TEMPLATE_RE = re.compile(r'{((?!\d)\w+)}')
-TIME_RE = re.compile(r'([\d.]+)([smhd])')
+TEMPLATE_RE = re.compile(r"{((?!\d)\w+)}")
+TIME_RE = re.compile(r"([\d.]+)([smhd])")
 
 
 def recursive_config_lookup(value, config, section, stack=None):
-  """Looks up format references in ConfigParser objects.
+    """Looks up format references in ConfigParser objects.
 
   For the sample config:
 
@@ -43,46 +42,49 @@ def recursive_config_lookup(value, config, section, stack=None):
   Returns:
     A string with references replaced.
   """
-  if stack is None:
-    stack = []
-  # Typically these are shallow, so this is efficient enough
-  if value in stack:
-    raise CycleError
-  stack.append(value)
+    if stack is None:
+        stack = []
+    # Typically these are shallow, so this is efficient enough
+    if value in stack:
+        raise CycleError
+    stack.append(value)
 
-  def local_sub(match):
-    return recursive_config_lookup(config.get(section, match.group(1)), config, section, stack)
-  response = TEMPLATE_RE.sub(local_sub, value)
-  stack.pop()
-  return response
+    def local_sub(match):
+        return recursive_config_lookup(
+            config.get(section, match.group(1)), config, section, stack
+        )
+
+    response = TEMPLATE_RE.sub(local_sub, value)
+    stack.pop()
+    return response
 
 
 class CycleError(Exception):
-  pass
+    pass
 
 
 class Config(object):
-  # TODO more than one filename?
-  def __init__(self, filename):
-    self._config = configparser.RawConfigParser()
-    if filename is not None:
-      if not self._config.read([os.path.expanduser(filename)]):
-        # N.b. if config existed but was invalid, we'd get
-        # MissingSectionHeaderError or so.
-        raise Exception('Nonexistent config', filename)
+    # TODO more than one filename?
+    def __init__(self, filename):
+        self._config = configparser.RawConfigParser()
+        if filename is not None:
+            if not self._config.read([os.path.expanduser(filename)]):
+                # N.b. if config existed but was invalid, we'd get
+                # MissingSectionHeaderError or so.
+                raise Exception("Nonexistent config", filename)
 
-  def get(self, section, option):
-    # Can raise NoOptionError, NoSectionError
-    value = self._config.get(section, option)
-    # Just an optimization
-    if '{' in value:
-      return recursive_config_lookup(value, self._config, section)
-    else:
-      return value
+    def get(self, section, option):
+        # Can raise NoOptionError, NoSectionError
+        value = self._config.get(section, option)
+        # Just an optimization
+        if "{" in value:
+            return recursive_config_lookup(value, self._config, section)
+        else:
+            return value
 
-  @classmethod
-  def parse_time(cls, time_string):
-    """Parse a time string.
+    @classmethod
+    def parse_time(cls, time_string):
+        """Parse a time string.
 
     Allowable suffixes include:
 
@@ -95,36 +97,36 @@ class Config(object):
 
     Returns the value in seconds, as an int if possible, otherwise a float.
     """
-    units = {
-        's': 1,
-        'm': 60,
-        'h': 3600,
-        'd': 86400,
-    }
-    if not time_string:
-      raise Exception('Empty time_string')
-    elif isinstance(time_string, (int, float)):
-      return time_string
-    elif time_string.isdigit():
-      # No suffix is interpreted as seconds.
-      # TODO: This doesn't work for floats.
-      return int(time_string)
-    else:
-      # Ensure that everything is matched.
-      if TIME_RE.sub('', time_string) != '':
-        raise Exception('Unknown time_string format', time_string)
-      total = 0
-      for m in TIME_RE.finditer(time_string):
-        try:
-          number = int(m.group(1))
-        except ValueError:
-          number = float(m.group(1))
-        unit_multiplier = units[m.group(2)]
-        total += unit_multiplier * number
-      return total
+        units = {
+            "s": 1,
+            "m": 60,
+            "h": 3600,
+            "d": 86400,
+        }
+        if not time_string:
+            raise Exception("Empty time_string")
+        elif isinstance(time_string, (int, float)):
+            return time_string
+        elif time_string.isdigit():
+            # No suffix is interpreted as seconds.
+            # TODO: This doesn't work for floats.
+            return int(time_string)
+        else:
+            # Ensure that everything is matched.
+            if TIME_RE.sub("", time_string) != "":
+                raise Exception("Unknown time_string format", time_string)
+            total = 0
+            for m in TIME_RE.finditer(time_string):
+                try:
+                    number = int(m.group(1))
+                except ValueError:
+                    number = float(m.group(1))
+                unit_multiplier = units[m.group(2)]
+                total += unit_multiplier * number
+            return total
 
-  def get_int_seconds(self, section, option, default):
-    if self._config.has_option(section, option):
-      return self.parse_time(self.get(section, option))
-    else:
-      return self.parse_time(default)
+    def get_int_seconds(self, section, option, default):
+        if self._config.has_option(section, option):
+            return self.parse_time(self.get(section, option))
+        else:
+            return self.parse_time(default)

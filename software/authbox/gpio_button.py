@@ -15,12 +15,12 @@
 """Abstraction around RPi.GPIO for blinky buttons.
 """
 
-from authbox.api import BasePinThread, GPIO
+from authbox.api import GPIO, BasePinThread
 from authbox.compat import queue
 
 
 class Button(BasePinThread):
-  """Button hardware abstraction.
+    """Button hardware abstraction.
 
   A button is defined in config as:
 
@@ -32,51 +32,63 @@ class Button(BasePinThread):
   probably need a different class.
   """
 
-  def __init__(self, event_queue, config_name, input_pin, output_pin, on_down=None):
-    super(Button, self).__init__(event_queue, config_name, int(input_pin), int(output_pin))
+    def __init__(
+        self,
+        event_queue,
+        config_name,
+        input_pin,
+        output_pin,
+        on_down=None,
+        blink_command_queue_cls=queue.Queue,
+    ):
+        super(Button, self).__init__(
+            event_queue, config_name, int(input_pin), int(output_pin)
+        )
 
-    self._on_down = on_down
-    self.blink_command_queue = queue.Queue()
-    self.blink_duration = 0.5  # seconds
-    self.blinking = False
-    if self._on_down:
-      GPIO.add_event_detect(self.input_pin, GPIO.FALLING, callback=self._callback, bouncetime=150)
+        self._on_down = on_down
+        self.blink_command_queue = blink_command_queue_cls()
+        self.blink_duration = 0.5  # seconds
+        self.blinking = False
+        if self._on_down:
+            GPIO.add_event_detect(
+                self.input_pin, GPIO.FALLING, callback=self._callback, bouncetime=150
+            )
 
-  def _callback(self, unused_channel):
-    """Wrapper to queue events instead of calling them directly."""
-    if self._on_down:
-      self.event_queue.put((self._on_down, self))
+    def _callback(self, unused_channel):
+        """Wrapper to queue events instead of calling them directly."""
+        if self._on_down:
+            self.event_queue.put((self._on_down, self))
 
-  def run_inner(self):
-    """Perform one on/off/blink pulse."""
-    try:
-      item = self.blink_command_queue.get(block=True, timeout=self.blink_duration)
-      self.blinking = item[0]
-      if self.blinking:
-        # Always begin on; always turn off when disabling
-        GPIO.output(self.output_pin, True)
-      else:
-        GPIO.output(self.output_pin, item[1])
-    except queue.Empty:
-      if self.blinking:
-        # When blinking, invert every timeout expiration (we might have woken
-        # up for some other reason, but this appears to work in practice).
-        GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
+    def run_inner(self):
+        """Perform one on/off/blink pulse."""
+        try:
+            item = self.blink_command_queue.get(block=True, timeout=self.blink_duration)
+            self.blinking = item[0]
+            if self.blinking:
+                # Always begin on; always turn off when disabling
+                GPIO.output(self.output_pin, True)
+            else:
+                GPIO.output(self.output_pin, item[1])
+        except queue.Empty:
+            if self.blinking:
+                # When blinking, invert every timeout expiration (we might have woken
+                # up for some other reason, but this appears to work in practice).
+                GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
 
-  def blink(self):
-    """Blink the light indefinitely.
+    def blink(self):
+        """Blink the light indefinitely.
 
     The time for each on or off pulse is `blink_duration`."""
-    self.blink_command_queue.put((True,))
+        self.blink_command_queue.put((True,))
 
-  def on(self):
-    """Turn the light (if present) on indefinitely.
+    def on(self):
+        """Turn the light (if present) on indefinitely.
 
     If the light is currently in the blink state, it stops blinking."""
-    self.blink_command_queue.put((False, True))
+        self.blink_command_queue.put((False, True))
 
-  def off(self):
-    """Turn the light (if present) off indefinitely.
+    def off(self):
+        """Turn the light (if present) off indefinitely.
 
     If the light is currently in the blink state, it stops blinkin."""
-    self.blink_command_queue.put((False, False))
+        self.blink_command_queue.put((False, False))

@@ -18,18 +18,19 @@ from __future__ import print_function
 
 import time
 
-from authbox.api import BasePinThread, GPIO
+from authbox.api import GPIO, BasePinThread
 from authbox.compat import queue
 
 OFF = 0
 ON = 1
 BEEPING = 2
-#HAPPY = 3
-#SAD = 4
+# HAPPY = 3
+# SAD = 4
 BEEP = 5
 
+
 class Buzzer(BasePinThread):
-  """Buzzer hardware abstraction.
+    """Buzzer hardware abstraction.
 
   A buzzer is defined in config as:
 
@@ -42,57 +43,59 @@ class Buzzer(BasePinThread):
   for more stable frequency.
   """
 
-  def __init__(self, event_queue, config_name, output_pin):
-    super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
-    self.set_queue = queue.Queue()
+    def __init__(self, event_queue, config_name, output_pin):
+        super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
+        self.set_queue = queue.Queue()
 
-    GPIO.output(self.output_pin, False)
-
-  def run_inner(self, block=True):
-    item = self.set_queue.get(block=block)
-    next_mode = item[0]
-    if next_mode == OFF:
-      GPIO.output(self.output_pin, False)
-    elif next_mode == ON:
-      GPIO.output(self.output_pin, True)
-    elif next_mode in (BEEP, BEEPING):
-      # As-is, this provides a logic HIGH to make a 4KHz sound on PK-12N40PQ;
-      print("Beeping")
-      while True:
-        if not self.set_queue.empty():
-          print("Done beeping")
-          break
-        GPIO.output(self.output_pin, True)
-        time.sleep(item[1])
         GPIO.output(self.output_pin, False)
-        time.sleep(item[2])
-        if next_mode == BEEP:
-          break
-        print("...more beep")
-    else:
-      print("Error", next_mode)
 
-  def _clear(self):
-    # This looks like a busy-wait, but isn't because of the exception.
-    try:
-      while True:
-        self.set_queue.get(block=False)
-    except queue.Empty:
-      pass
+    def run_inner(self, block=True):
+        item = self.set_queue.get(block=block)
+        next_mode = item[0]
+        if next_mode == OFF:
+            GPIO.output(self.output_pin, False)
+        elif next_mode == ON:
+            GPIO.output(self.output_pin, True)
+        elif next_mode in (BEEP, BEEPING):
+            # As-is, this provides a logic HIGH to make a 4KHz sound on PK-12N40PQ;
+            print("Beeping")
+            while True:
+                if not self.set_queue.empty():
+                    print("Done beeping")
+                    break
+                GPIO.output(self.output_pin, True)
+                time.sleep(item[1])
+                GPIO.output(self.output_pin, False)
+                time.sleep(item[2])
+                if next_mode == BEEP:
+                    break
+                print("...more beep")
+        else:
+            print("Error", next_mode)
 
-  def beepbeep(self, on_time=0.3, off_time=0.3):
-    # rename to keep_beeping
-    self._clear()
-    self.set_queue.put((BEEPING, on_time, off_time))
+    def _clear(self):
+        # This looks like a busy-wait, but isn't because of the exception.
+        try:
+            while True:
+                self.set_queue.get(block=False)
+        except queue.Empty:
+            pass
 
-  def beep(self, on_time=0.3, off_time=0.3):
-    self._clear()
-    self.set_queue.put((BEEP, on_time, off_time))
+    def beepbeep(self, on_time=0.3, off_time=0.3):
+        # rename to keep_beeping
+        self._clear()
+        self.set_queue.put((BEEPING, on_time, off_time))
 
-  def off(self, clear=True):
-    if clear: self._clear()
-    self.set_queue.put((OFF,))
+    def beep(self, on_time=0.3, off_time=0.3):
+        self._clear()
+        self.set_queue.put((BEEP, on_time, off_time))
 
-  def on(self, clear=True):
-    if clear: self._clear()
-    self.set_queue.put((ON,))
+    def off(self, clear=True):
+        if clear:
+            self._clear()
+        self.set_queue.put((OFF,))
+
+    def on(self, clear=True):
+        if clear:
+            self._clear()
+        self.set_queue.put((ON,))
