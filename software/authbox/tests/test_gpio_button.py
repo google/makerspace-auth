@@ -65,8 +65,108 @@ class BlinkTest(unittest.TestCase):
 
     def test_blinking_thread(self):
         self.b.blink()
-        for i in range(4):
+        for i in range(8):
             self.b.run_inner()
+
+        # Number of on/off transitions corresponds to number of run_inner() calls
         self.fake.compare_log(
-            [(0.0, 2, True), (0.5, 2, False), (1.0, 2, True), (1.5, 2, False)]
+            [
+                (0.0, 2, True),
+                (0.5, 2, False),
+                (1.0, 2, True),
+                (1.5, 2, False),
+                (2.0, 2, True),
+                (2.5, 2, False),
+                (3.0, 2, True),
+                (3.5, 2, False),
+            ]
+        )
+
+    def test_finite_blink_count_from_off(self):
+        self.b.off()
+        self.b.run_inner()
+        self.time.sleep(10)
+
+        self.b.blink(count=2)
+        for i in range(8):
+            self.b.run_inner()
+
+        # Has only 2 "on" transitions even after additional run_inner() calls
+        self.fake.compare_log(
+            [
+                (0.0, 2, False),
+                (10.0, 2, True),
+                (10.5, 2, False),
+                (11.0, 2, True),
+                (11.5, 2, False),
+            ]
+        )
+
+    def test_finite_blink_count_from_on(self):
+        self.b.on()
+        self.b.run_inner()
+        self.time.sleep(10)
+
+        self.b.blink(count=2)
+        for i in range(8):
+            self.b.run_inner()
+
+        # Has only 2 "off" transitions even after additional run_inner() calls
+        self.fake.compare_log(
+            [
+                (0.0, 2, True),
+                (10.0, 2, False),
+                (10.5, 2, True),
+                (11.0, 2, False),
+                (11.5, 2, True),
+            ]
+        )
+
+    def test_steady_state_cancels_blink(self):
+        self.b.blink()
+        for i in range(2):
+            self.b.run_inner()
+
+        # Transitions after 2 cycles of indefinite blinking
+        self.fake.compare_log([(0.0, 2, True), (0.5, 2, False)])
+
+        # Changing steady state should cancel blink
+        self.b.on()
+        for i in range(8):
+            self.b.run_inner()
+
+        # No more blink transitions even after additional run_inner() calls
+        self.fake.compare_log([(0.0, 2, True), (0.5, 2, False), (0.5, 2, True)])
+
+    def test_overlapping_blink_counts(self):
+        # Begin with light in the "on" steady state
+        self.b.on()
+        self.b.run_inner()
+        self.time.sleep(10)
+
+        # Begin first finite blink cycle
+        self.b.blink()
+        self.b.run_inner()
+
+        # Light is currently "off" and in the middle of the blink cycle
+        self.fake.compare_log([(0.0, 2, True), (10.0, 2, False)])
+
+        # New blink cycle starts while light still "off" from the first blink cycle
+        self.time.sleep(0.1)
+        self.b.blink(count=2)
+        for i in range(8):
+            self.b.run_inner()
+
+        # Second blink cycle count overrides the first. The final blink transition
+        # won't be user visible because it's the same "on" state as the initial
+        # steady state to which we return.
+        self.fake.compare_log(
+            [
+                (0.0, 2, True),  # Initial steady state
+                (10.0, 2, False),  # First blink cycle starts
+                (10.1, 2, True),  # Second blink cycle starts
+                (10.6, 2, False),
+                (11.1, 2, True),
+                (11.6, 2, True),  # Second blink cycle ends after 4 cycles
+            ]
         )
