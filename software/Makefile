@@ -1,32 +1,47 @@
-PYTHON?=python
-NOSE?=$(PYTHON) -m nose
+.ONESHELL:
 SOURCES=authbox setup.py
+
+ifeq ($(shell grep ^ID= /etc/os-release | cut -d = -f 2), raspbian)
+	RASPBIAN=1
+	PYTHON?=python3
+else
+	PYTHON?=python
+endif
 
 .PHONY: venv
 venv:
-	$(PYTHON) -m venv .venv
-	source .venv/bin/activate && make setup
-	@echo 'run `source .venv/bin/activate` to use virtualenv'
+	$(PYTHON) -m venv .venv && echo 'run `. .venv/bin/activate` to use virtualenv' ||  ( echo "You must install python3-venv: apt-get install python3-venv")
 
-# The reset of these are intended to be run within the venv, where python points
-# to whatever was used to set up the venv.
-
-.POHONY: setup
+.PHONY: setup
 setup:
-	python -m pip install -Ur requirements-dev.txt
+ifeq ($RASBIAN,1)
+	if ! dpkg -s python3-numpy | grep Status | grep -q installed; then \
+		echo ERROR: please install python3-numpy: apt-get install python3-numpy; \
+		exit 1; \
+	fi
+	if ! dpkg -s libatlas-base-dev | grep Status | grep -q installed; then \
+		echo ERROR: please install libatlas-base-dev: apt-get install libatlas-base-dev; \
+		exit 1; \
+	fi
+endif
+	if [ -d ".venv" ]; then . .venv/bin/activate; fi
+	${PYTHON} -m pip install -Ur requirements-dev.txt
 
 .PHONY: test
 test:
-	python -m coverage run -m authbox.tests $(TESTOPTS)
-	python -m coverage report --fail-under=75 --omit='.venv/*,.tox/*' --show-missing
+	if [ -d ".venv" ]; then . .venv/bin/activate; fi
+	${PYTHON} -m coverage run -m authbox.tests $(TESTOPTS)
+	${PYTHON} -m coverage report --fail-under=75 --omit='authbox/tests/*' --include='authbox/*' --show-missing
 
 .PHONY: format
 format:
-	python -m isort --recursive -y $(SOURCES)
-	python -m black $(SOURCES)
+	if [ -d ".venv" ]; then . .venv/bin/activate; fi
+	${PYTHON} -m isort --recursive -y $(SOURCES)
+	${PYTHON} -m black $(SOURCES)
 
 .PHONY: lint
 lint:
-	python -m isort --recursive --diff $(SOURCES)
-	python -m black --check $(SOURCES)
-	python -m flake8 $(SOURCES)
+	if [ -d ".venv" ]; then . .venv/bin/activate; fi
+	${PYTHON} -m isort --recursive --diff $(SOURCES)
+	${PYTHON} -m black --check $(SOURCES)
+	${PYTHON} -m flake8 $(SOURCES)
