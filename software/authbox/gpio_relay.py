@@ -27,14 +27,14 @@ types = {
 class Relay(BasePinThread):
     """Relay hardware abstraction.
 
-  A relay is defined in config as:
+    A relay is defined in config as:
 
-    [pins]
-    name = Relay:ActiveHigh:1
+      [pins]
+      name = Relay:ActiveHigh:1
 
-  where ActiveHigh may instead be ActiveLow, as appropriate, and 1 is the output
-  pin (physical numbering).
-  """
+    where ActiveHigh may instead be ActiveLow, as appropriate, and 1 is the output
+    pin (physical numbering).
+    """
 
     def __init__(self, event_queue, config_name, output_type, output_pin):
         super(Relay, self).__init__(

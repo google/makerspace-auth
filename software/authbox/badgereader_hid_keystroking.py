@@ -25,21 +25,21 @@ from authbox.api import BaseDerivedThread, NoMatchingDevice
 class HIDKeystrokingReader(BaseDerivedThread):
     """Badge reader hardware abstraction.
 
-  A badge reader is defined in config as:
+    A badge reader is defined in config as:
 
-    [pins]
-    name = HIDKeystrokingReader:<Name>
+      [pins]
+      name = HIDKeystrokingReader:<Name>
 
-  Where `<Name>` is the name evdev sees.  This appears to match a substring of
-  /dev/input/by-id, for example if that directory contains
-  `usb-RFIDeas_USB_Keyboard-event-kbd`, the evdev name is `RFIdeas USB
-  Keyboard` with spaces.  You can confirm this in Python by executing:
+    Where `<Name>` is the name evdev sees.  This appears to match a substring of
+    /dev/input/by-id, for example if that directory contains
+    `usb-RFIDeas_USB_Keyboard-event-kbd`, the evdev name is `RFIdeas USB
+    Keyboard` with spaces.  You can confirm this in Python by executing:
 
-  >>> import evdev
-  >>> [evdev.InputDevice(d).name() for d in evdev.list_devices()]
+    >>> import evdev
+    >>> [evdev.InputDevice(d).name() for d in evdev.list_devices()]
 
-  This has been tested on a couple of brands of reader and seems to be pretty generic.
-  """
+    This has been tested on a couple of brands of reader and seems to be pretty generic.
+    """
 
     scancodes = {
         # Scancode: ASCIICode
@@ -180,9 +180,9 @@ class HIDKeystrokingReader(BaseDerivedThread):
     def get_scanner_device(self):
         """Finds connected device matching device_name.
 
-    Returns:
-      The file for input events that read_input can listen to
-    """
+        Returns:
+          The file for input events that read_input can listen to
+        """
 
         devices = [evdev.InputDevice(x) for x in evdev.list_devices()]
         for dev in devices:
@@ -196,12 +196,12 @@ class HIDKeystrokingReader(BaseDerivedThread):
     def read_input(self):
         """Listens solely to the RFID keyboard and returns the scanned badge.
 
-    Args:
-      device: input device to listen to
+        Args:
+          device: input device to listen to
 
-    Returns:
-      badge value as string
-    """
+        Returns:
+          badge value as string
+        """
 
         rfid = ""
         capitalized = 0
