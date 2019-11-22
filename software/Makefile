@@ -31,7 +31,7 @@ endif
 test:
 	if [ -d ".venv" ]; then . .venv/bin/activate; fi
 	${PYTHON} -m coverage run -m authbox.tests $(TESTOPTS)
-	${PYTHON} -m coverage report --fail-under=75 --omit='authbox/tests/*' --include='authbox/*' --show-missing
+	${PYTHON} -m coverage report
 
 .PHONY: format
 format:
