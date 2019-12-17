@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2019-2020 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Example using two buttons for "on" and "off" once badged.
+"""Example using a badge swipe to pop open a cabinet lock.
 
 """
 from __future__ import print_function
@@ -64,8 +64,8 @@ class Dispatcher(BaseDispatcher):
     rc = subprocess.call(command)
 
     if rc == 0:
-      self.output_relay.on()
       self.disable_timer.cancel()
+      self.output_relay.on()
       self.disable_timer.set(self.config.get_int_seconds('auth', 'duration', '1s'))
 
   def disable(self, source=None):
