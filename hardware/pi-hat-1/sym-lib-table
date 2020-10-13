@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name ms_auth_breakout)(type Legacy)(uri ${KIPRJMOD}/ms_auth_breakout.lib)(options "")(descr ""))
+)
