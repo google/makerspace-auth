@@ -1,0 +1,4 @@
+# Exemption reason: This repo contains text-based Kicad .lib files which are falsely identified as executable binaries.
+# Exemption timeframe: permanent
+optConfig:
+  optOut: true
