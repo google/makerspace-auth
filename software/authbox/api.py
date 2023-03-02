@@ -29,8 +29,9 @@ import threading
 import traceback
 import types
 
-from authbox.compat import queue
 from RPi import GPIO
+
+from authbox.compat import queue
 
 # The line above simplifies imports for other modules that are already importing from api.
 

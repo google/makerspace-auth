@@ -18,10 +18,11 @@ import threading
 import time
 import unittest
 
+from RPi import GPIO
+
 import authbox.badgereader_wiegand_gpio
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
-from RPi import GPIO
 
 
 class BadgereaderWiegandGPIOTest(unittest.TestCase):
@@ -29,7 +30,11 @@ class BadgereaderWiegandGPIOTest(unittest.TestCase):
         self.fake = fake_gpio_for_testing.FakeGPIO()
         self.q = queue.Queue()
         self.b = authbox.badgereader_wiegand_gpio.WiegandGPIOReader(
-            self.q, "b", "0", "1", on_scan=self.on_scan,
+            self.q,
+            "b",
+            "0",
+            "1",
+            on_scan=self.on_scan,
         )
 
     def on_scan(self, badge_number):
