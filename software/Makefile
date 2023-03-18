@@ -36,12 +36,12 @@ test:
 .PHONY: format
 format:
 	if [ -d ".venv" ]; then . .venv/bin/activate; fi
-	${PYTHON} -m isort --recursive -y $(SOURCES)
+	${PYTHON} -m isort $(SOURCES)
 	${PYTHON} -m black $(SOURCES)
 
 .PHONY: lint
 lint:
 	if [ -d ".venv" ]; then . .venv/bin/activate; fi
-	${PYTHON} -m isort --recursive --diff $(SOURCES)
+	${PYTHON} -m isort --diff $(SOURCES)
 	${PYTHON} -m black --check $(SOURCES)
 	${PYTHON} -m flake8 $(SOURCES)

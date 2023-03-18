@@ -17,10 +17,11 @@
 import unittest
 from functools import partial
 
+from RPi import GPIO
+
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
-from RPi import GPIO
 
 
 class ImpatientQueue(queue.Queue):
