@@ -52,6 +52,7 @@ class Button(BasePinThread):
         self.blink_count = 0
         self.steady_state = False
         if self._on_down:
+            GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.add_event_detect(
                 self.input_pin, GPIO.FALLING, callback=self._callback, bouncetime=150
             )
