@@ -112,14 +112,16 @@ class Dispatcher(BaseDispatcher):
 
   def abort(self, source):
     print("Abort", source)
+    self.enable_output.off()
     if self.authorized:
       command = self._get_command_line('auth', 'deauth_command', [self.badge_id])
       subprocess.call(command)
+    self.off_button.blink(1)
+    self.buzzer.beep()
     self.authorized = False
     self.warning_timer.cancel()
     self.expecting_press_timer.cancel()
     self.on_button.off()
-    self.enable_output.off()
     self.buzzer.off()
     if self.noise:
       self.noise.kill()
