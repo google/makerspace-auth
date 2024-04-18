@@ -60,19 +60,21 @@ class Button(BasePinThread):
 
     def _callback(self, unused_channel):
         """Wrapper to queue events instead of calling them directly."""
-        # This is a de-bounce filter to prevent spurious signals from triggering the logic
-        # Looks for 5 continuous active states (each separated by 10ms)
-        maxcount = 15 # Look for 150ms maximum
-        lowcount = 0 # Count the number of active states seen
-        while ((maxcount > 0) and (lowcount <= 4)):
-            time.sleep(0.01) # 10ms delay between each cycle
-            maxcount = maxcount - 1 # Decrement remaining cycles
-            if (not GPIO.input(self.input_pin)):
-                lowcount = lowcount + 1 # One more low cycle detected
-            else:
-                lowcount = 0 # Not continuously low, reset
-        if ((lowcount > 4) and (self._on_down)):
-            self.event_queue.put((self._on_down, self))
+        # If we have a callback registered, debounce the switch press
+        if (self._on_down):
+            # This is a de-bounce filter to prevent spurious signals from triggering the logic
+            # Looks for 5 continuous active states (each separated by 10ms)
+            maxcount = 15 # Look for 150ms maximum
+            lowcount = 0 # Count the number of active states seen
+            while ((maxcount > 0) and (lowcount <= 4)):
+                time.sleep(0.01) # 10ms delay between each cycle
+                maxcount = maxcount - 1 # Decrement remaining cycles
+                if (not GPIO.input(self.input_pin)):
+                    lowcount = lowcount + 1 # One more low cycle detected
+                else:
+                   lowcount = 0 # Not continuously low, reset
+            if (lowcount > 4):
+                self.event_queue.put((self._on_down, self))
 
     def run_inner(self):
         """Perform one on/off/blink pulse."""
