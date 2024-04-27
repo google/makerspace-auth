@@ -121,6 +121,7 @@ class Dispatcher(BaseDispatcher):
     self.authorized = False
     self.warning_timer.cancel()
     self.expecting_press_timer.cancel()
+    self.expire_timer.cancel()
     self.on_button.off()
     self.buzzer.off()
     if self.noise:
