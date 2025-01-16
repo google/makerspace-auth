@@ -2,7 +2,7 @@ In order to add support for the Digital Loggers IoT relay (https://www.digital-l
 
 1: Attach the positive lead to pin 1 of J7 (the pin closest to the J12/J13 relays) and the negative lead to J7 pin 2.
 
-2: Update the two_button.ini config so that line 39 now reads " enable_output = Relay:ActiveHigh:40 ".
+2: Update the software/two_button.ini config file so that the default line 39 now reads " enable_output = Relay:ActiveHigh:40 ".
 
 3: Verify pins 1 and 2 alternate from 12v to 0v with a multimeter, as you actuate the buttons.
 
