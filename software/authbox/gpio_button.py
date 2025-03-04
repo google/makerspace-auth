@@ -129,3 +129,7 @@ class Button(BasePinThread):
 
         If the light is currently in the blink state, it stops blinkin."""
         self.blink_command_queue.put((False, False))
+
+    def is_pressed(self):
+        """Returns True if the button is currently pressed, False otherwise."""
+        return self.gpio_button.is_pressed

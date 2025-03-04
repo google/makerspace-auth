@@ -29,7 +29,7 @@ import threading
 import traceback
 import types
 
-from gpiozero import InputDevice
+from gpiozero import DigitalInputDevice
 
 from authbox.compat import queue
 
@@ -147,9 +147,9 @@ class BaseWiegandPinThread(BaseDerivedThread):
         self.d1_pin = d1_pin
 
         if self.d0_pin:
-            self.d0_input_device = InputDevice(pin="BOARD" + d0_pin)
+            self.d0_input_device = DigitalInputDevice(pin="BOARD" + d0_pin)
         if self.d1_pin:
-            self.d1_input_device = InputDevice(pin="BOARD" + d1_pin)
+            self.d1_input_device = DigitalInputDevice(pin="BOARD" + d1_pin)
 
 
 class NoMatchingDevice(Exception):

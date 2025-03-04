@@ -20,39 +20,50 @@ import authbox.gpio_buzzer
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
 
+class TestBuzzer(authbox.gpio_buzzer.Buzzer):
+    def assert_states(self, expected_states):
+        assert len(self.gpio_buzzer.pin.states) == len(expected_states)
+        self.gpio_buzzer.pin.assert_states(expected_states)
+
+    def clear_states(self):
+        self.gpio_buzzer.pin.clear_states()
+
+    def close(self):
+      self.gpio_buzzer.close()
 
 class BuzzerTest(unittest.TestCase):
     def setUp(self):
         self.time = fake_gpio_for_testing.FakeTime()
-        self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
         authbox.gpio_buzzer.time = self.time
 
         self.q = queue.Queue()
-        self.b = authbox.gpio_buzzer.Buzzer(self.q, "b", "1")
+        self.b = TestBuzzer(self.q, "b", "15")
+        self.b.clear_states()
+    
+    def tearDown(self):
+      self.b.close()
 
     def test_on(self):
         self.time.sleep(2)
         self.b.on()
         self.b.run_inner(False)
         self.assertRaises(queue.Empty, self.b.run_inner, False)
-        self.fake.compare_log([(0, 1, False), (2, 1, True)])
+        self.b.assert_states([False, True])
 
     def test_off(self):
         self.time.sleep(2)
         self.b.off()
         self.b.run_inner(False)
         self.assertRaises(queue.Empty, self.b.run_inner, False)
-        self.fake.compare_log([(0, 1, False), (2, 1, False)])
+        self.b.assert_states([False])
 
-    def test_beep(self):
+    def test_beep(self):        
         self.b.beep()
         self.b.run_inner(False)
         self.b.on()
         self.b.run_inner(False)
         self.assertRaises(queue.Empty, self.b.run_inner, False)
-        self.fake.compare_log(
-            [(0, 1, False), (0, 1, True), (0.3, 1, False), (0.6, 1, True)]
-        )
+        self.b.assert_states([False, True, False, True])
 
     # BEEPING mode is not very testable, due to the infinite loop and empty
     # check.  We could put this in another thread, but that's a test for another

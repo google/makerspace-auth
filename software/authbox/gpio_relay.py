@@ -50,7 +50,7 @@ class Relay(BasePinThread):
         pass  # Don't need a thread
 
     def on(self):
-        self.gpio_relay.on()
+        self.gpio_relay.value = self.output_on_val
 
     def off(self):
-        self.gpio_relay.off()
+        self.gpio_relay.value = not self.output_on_val
