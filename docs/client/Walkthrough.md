@@ -1,8 +1,7 @@
 ## Dependencies
 
-* pygpio
+* gpiozero
 * python evdev
-* being in the gpio group
 
 ## Loading hardware objects
 

@@ -29,7 +29,7 @@ import threading
 import traceback
 import types
 
-from RPi import GPIO
+from gpiozero import InputDevice
 
 from authbox.compat import queue
 
@@ -131,19 +131,12 @@ class BaseDerivedThread(threading.Thread):
 
 class BasePinThread(BaseDerivedThread):
     def __init__(
-        self, event_queue, config_name, input_pin, output_pin, initial_output=GPIO.LOW
+        self, event_queue, config_name, input_pin, output_pin
     ):
         super(BasePinThread, self).__init__(event_queue, config_name)
 
         self.input_pin = input_pin
         self.output_pin = output_pin
-
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setwarnings(False)  # for reusing pins
-        if self.input_pin:
-            GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        if self.output_pin:
-            GPIO.setup(self.output_pin, GPIO.OUT, initial=initial_output)
 
 
 class BaseWiegandPinThread(BaseDerivedThread):
@@ -153,12 +146,10 @@ class BaseWiegandPinThread(BaseDerivedThread):
         self.d0_pin = d0_pin
         self.d1_pin = d1_pin
 
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setwarnings(False)  # for reusing pins
         if self.d0_pin:
-            GPIO.setup(self.d0_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.d0_input_device = InputDevice(pin="BOARD" + d0_pin)
         if self.d1_pin:
-            GPIO.setup(self.d1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.d1_input_device = InputDevice(pin="BOARD" + d1_pin)
 
 
 class NoMatchingDevice(Exception):

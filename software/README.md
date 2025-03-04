@@ -5,8 +5,8 @@ For the basic walkthrough of how this code works, see https://google.github.io/m
 Prerequisites:
 
 1. Python 2.7 or 3.6+
-1. `evdev` (python-evdev on Debian)
-1. `RPi` module (or `pip install fake-rpi` for testing)
+1. `evdev` (On Raspberry Pi OS, you can install with `sudo apt install python3-evdev`)
+1. `gpiozero` module
 1. Make sure you're in the 'input' group to use evdev
 1. Make sure you're in the gpio group if you're on a Pi
 

@@ -17,7 +17,7 @@
 
 from __future__ import division, print_function
 
-from authbox.api import GPIO, BaseWiegandPinThread
+from authbox.api import BaseWiegandPinThread
 from authbox.compat import queue
 
 DEFAULT_QUEUE_SIZE = 100  # more than enough for a scan
@@ -73,11 +73,11 @@ class WiegandGPIOReader(BaseWiegandPinThread):
         self.timeout_in_seconds = float(timeout_in_ms) / 1000
 
         if self._on_scan:
-            GPIO.add_event_detect(self.d0_pin, GPIO.FALLING, callback=self.decode)
-            GPIO.add_event_detect(self.d1_pin, GPIO.FALLING, callback=self.decode)
+            self.d0_input_device.when_pressed = self.decode;
+            self.d1_input_device.when_pressed = self.decode;
 
     def decode(self, channel):
-        bit = "0" if channel == self.d0_pin else "1"
+        bit = "0" if channel.value == self.d0_input_device else "1"
         try:
             self.bitqueue.put_nowait(bit)
         except queue.Full:
