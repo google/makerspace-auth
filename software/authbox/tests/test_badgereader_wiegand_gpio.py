@@ -19,6 +19,8 @@ import threading
 import time
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.badgereader_wiegand_gpio
 from authbox.compat import queue
 

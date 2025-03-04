@@ -17,6 +17,8 @@
 
 from __future__ import print_function
 
+import evdev
+
 from authbox.api import BaseDerivedThread, NoMatchingDevice
 
 class HIDKeystrokingReader(BaseDerivedThread):

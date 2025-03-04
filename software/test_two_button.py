@@ -19,7 +19,9 @@ import unittest
 import tempfile
 import threading
 import time
+
 from gpiozero import Device
+from gpiozero.pins.mock import MockFactory
 
 import two_button
 
@@ -29,11 +31,11 @@ from authbox import fake_gpio_for_testing
 
 SAMPLE_CONFIG = b'''
 [pins]
-on_button=Button:1:2
-off_button=Button:3:4
-enable_output=Relay:ActiveHigh:5
+on_button=Button:11:38
+off_button=Button:16:37
+enable_output=Relay:ActiveHigh:29
 badge_reader=HIDKeystrokingReader:badge_scanner
-buzzer=Buzzer:9
+buzzer=Buzzer:35
 [auth]
 duration=20s
 warning=10s
@@ -49,13 +51,14 @@ deauth_command = rm -f enabled
 # same thread serialized.
 class SimpleDispatcherTest(unittest.TestCase):
   def setUp(self):
+    Device.pin_factory = MockFactory()
+
     try:
       from authbox import fake_evdev_device_for_testing
     except ModuleNotFoundError:
       self.fail("Test requires evdev, but evdev is not available")
     authbox.badgereader_hid_keystroking.evdev.list_devices = fake_evdev_device_for_testing.list_devices
     authbox.badgereader_hid_keystroking.evdev.InputDevice = fake_evdev_device_for_testing.InputDevice
-    self.gpio = fake_gpio_for_testing.FakeGPIO()
 
     with tempfile.NamedTemporaryFile() as f:
       f.write(SAMPLE_CONFIG)
@@ -64,21 +67,24 @@ class SimpleDispatcherTest(unittest.TestCase):
 
     self.dispatcher = two_button.Dispatcher(config)
 
+  def is_relay_on(self):
+    relay = getattr(self.dispatcher, "enable_output")
+    return relay.gpio_relay.value 
+
   def test_auth_flow(self):
     # Out of the box, relay should be off
     self.assertFalse(self.dispatcher.authorized)
-    # print(Device.pin_factory.pins)
-    # self.assertFalse(Device.pin_factory.pins)
+    self.assertFalse(self.is_relay_on())
     # Badge scan sets authorized flag, but doesn't enable relay until button
     # press.
     self.dispatcher.badge_scan('1234')
     self.assertTrue(self.dispatcher.authorized)
-    # self.assertFalse(GPIO.input(5))
+    self.assertFalse(self.is_relay_on())
     # "On" button pressed
     self.dispatcher.on_button_down(None)
     self.assertTrue(self.dispatcher.authorized)
-    # self.assertTrue(GPIO.input(5))
+    self.assertTrue(self.is_relay_on())
     # "Off" button pressed
     self.dispatcher.abort(None)
     self.assertFalse(self.dispatcher.authorized)
-    # self.assertFalse(GPIO.input(5))
+    self.assertFalse(self.is_relay_on())

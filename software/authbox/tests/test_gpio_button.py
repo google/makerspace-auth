@@ -17,8 +17,7 @@
 import unittest
 from functools import partial
 
-from gpiozero import Device
-from gpiozero.pins.mock import MockFactory
+import setup_mock_pin_factory
 
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
@@ -58,7 +57,6 @@ class ImpatientQueue(queue.Queue):
 
 class BlinkTest(unittest.TestCase):
     def setUp(self):
-        Device.pin_factory = MockFactory()
         self.time = fake_gpio_for_testing.FakeTime()
         # self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
         self.q = queue.Queue()
@@ -70,6 +68,7 @@ class BlinkTest(unittest.TestCase):
             on_down=self.on_down,
             blink_command_queue_cls=partial(ImpatientQueue, self.time),
         )
+        self.b.clear_states()
 
     def tearDown(self):
       self.b.close()
@@ -85,9 +84,9 @@ class BlinkTest(unittest.TestCase):
         self.b.drive_high()
         self.b.run_inner()
 
-        # Assert that button states went from off to on
+        # Assert that button state is on
         self.assertTrue(self.b.is_pressed)
-        self.b.assert_button_states([False, True])
+        self.b.assert_button_states([True])
 
     def test_blinking_thread(self):
         self.b.blink()

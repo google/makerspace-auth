@@ -19,6 +19,8 @@ import gpiozero.pins.mock
 import tempfile
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.api
 import authbox.config
 import authbox.gpio_button

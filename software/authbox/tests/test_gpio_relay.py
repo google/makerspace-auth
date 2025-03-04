@@ -16,6 +16,8 @@
 
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
