@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Abstraction around RPi.GPIO for buzzer type outputs.
+"""Abstraction for buzzer type outputs.
 """
 from __future__ import print_function
 
+import gpiozero
 import time
 
-from authbox.api import GPIO, BasePinThread
+from authbox.api import BasePinThread
 from authbox.compat import queue
 
 OFF = 0
@@ -47,15 +48,16 @@ class Buzzer(BasePinThread):
         super(Buzzer, self).__init__(event_queue, config_name, None, int(output_pin))
         self.set_queue = queue.Queue()
 
-        GPIO.output(self.output_pin, False)
+        self.gpio_buzzer = gpiozero.Buzzer("BOARD" + str(self.output_pin))
+        self.gpio_buzzer.off()
 
     def run_inner(self, block=True):
         item = self.set_queue.get(block=block)
         next_mode = item[0]
         if next_mode == OFF:
-            GPIO.output(self.output_pin, False)
+            self.gpio_buzzer.off()
         elif next_mode == ON:
-            GPIO.output(self.output_pin, True)
+            self.gpio_buzzer.on()
         elif next_mode in (BEEP, BEEPING):
             # As-is, this provides a logic HIGH to make a 4KHz sound on PK-12N40PQ;
             print("Beeping")
@@ -63,9 +65,9 @@ class Buzzer(BasePinThread):
                 if not self.set_queue.empty():
                     print("Done beeping")
                     break
-                GPIO.output(self.output_pin, True)
+                self.gpio_buzzer.on()
                 time.sleep(item[1])
-                GPIO.output(self.output_pin, False)
+                self.gpio_buzzer.off()
                 time.sleep(item[2])
                 if next_mode == BEEP:
                     break

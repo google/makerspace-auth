@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Abstraction around RPi.GPIO for relay type outputs.
+"""Abstraction for relay type outputs.
 """
 
+import gpiozero
 
-from authbox.api import GPIO, BasePinThread
+from authbox.api import BasePinThread
 
 types = {
     "ActiveHigh": 1,
@@ -38,9 +39,10 @@ class Relay(BasePinThread):
 
     def __init__(self, event_queue, config_name, output_type, output_pin):
         super(Relay, self).__init__(
-            event_queue, config_name, None, int(output_pin), not types[output_type]
+            event_queue, config_name, None, int(output_pin)
         )
         self.output_on_val = types[output_type]
+        self.gpio_relay = gpiozero.DigitalOutputDevice("BOARD" + str(output_pin), initial_value= not types[output_type])
         # TODO: Push this initial setup into BasePinThread, to avoid a momentary glitch
         self.off()
 
@@ -48,7 +50,7 @@ class Relay(BasePinThread):
         pass  # Don't need a thread
 
     def on(self):
-        GPIO.output(self.output_pin, self.output_on_val)
+        self.gpio_relay.value = self.output_on_val
 
     def off(self):
-        GPIO.output(self.output_pin, not self.output_on_val)
+        self.gpio_relay.value = not self.output_on_val

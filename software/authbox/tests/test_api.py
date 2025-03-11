@@ -14,8 +14,12 @@
 
 """Tests for authbox.api"""
 
+import gpiozero
+import gpiozero.pins.mock
 import tempfile
 import unittest
+
+import setup_mock_pin_factory
 
 import authbox.api
 import authbox.config
@@ -23,10 +27,10 @@ import authbox.gpio_button
 
 SAMPLE_CONFIG = b"""
 [pins]
-button_a = Button:1:2
+button_a = Button:11:38
 button_b = Button
 button_c = Button:1:2:3:4:5
-button_multi = Button:1:2, Button:3:4
+button_multi = Button:11:38, Button:16:37
 bad = MissingClass:1:2
 """
 
@@ -37,6 +41,12 @@ class ClassRegistryTest(unittest.TestCase):
         self.assertEqual(len(short_names), len(authbox.api.CLASS_REGISTRY))
 
     def test_all_names_importable(self):
+      try:
+        import evdev
+        del evdev
+      except ModuleNotFoundError:
+        self.fail("Test requires evdev, but evdev is not available")
+      
         for c in authbox.api.CLASS_REGISTRY:
             cls = authbox.api._import(c)
             assert issubclass(
@@ -55,8 +65,8 @@ class DispatcherTest(unittest.TestCase):
     def test_load_config_object(self):
         self.dispatcher.load_config_object("button_a")
         self.assertIsInstance(self.dispatcher.button_a, authbox.gpio_button.Button)
-        self.assertEqual(self.dispatcher.button_a.input_pin, 1)
-        self.assertEqual(self.dispatcher.button_a.output_pin, 2)
+        self.assertEqual(self.dispatcher.button_a.input_pin, 11)
+        self.assertEqual(self.dispatcher.button_a.output_pin, 38)
 
     def test_load_config_object_multiproxy(self):
         self.dispatcher.load_config_object("button_multi")

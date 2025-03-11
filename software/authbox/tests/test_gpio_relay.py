@@ -16,25 +16,34 @@
 
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
 
+class TestRelay(authbox.gpio_relay.Relay):
+    def assert_states(self, expected_states):
+        assert len(self.gpio_relay.pin.states) == len(expected_states)
+        self.gpio_relay.pin.assert_states(expected_states)
+    def clear_states(self):
+      self.gpio_relay.pin.clear_states()
 
 class RelayTest(unittest.TestCase):
     def setUp(self):
         self.time = fake_gpio_for_testing.FakeTime()
-        self.fake = fake_gpio_for_testing.FakeGPIO(self.time)
         self.q = queue.Queue()
 
     def test_activehigh(self):
-        self.b = authbox.gpio_relay.Relay(self.q, "b", "ActiveHigh", "1")
+        self.b = TestRelay(self.q, "b", "ActiveHigh", "15")
+        self.b.clear_states()
         self.time.sleep(5)
         self.b.on()
-        self.fake.compare_log([(0, 1, False), (5, 1, True)])
+        self.b.assert_states([False, True])
 
     def test_activelow(self):
-        self.b = authbox.gpio_relay.Relay(self.q, "b", "ActiveLow", "1")
+        self.b = TestRelay(self.q, "b", "ActiveLow", "15")
+        self.b.clear_states()
         self.time.sleep(5)
         self.b.on()
-        self.fake.compare_log([(0, 1, True), (5, 1, False)])
+        self.b.assert_states([True, False])

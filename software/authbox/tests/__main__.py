@@ -10,7 +10,6 @@ from authbox.tests.test_api import (
 from authbox.tests.test_badgereader_hid_keystroking import BadgereaderTest
 from authbox.tests.test_badgereader_wiegand_gpio import BadgereaderWiegandGPIOTest
 from authbox.tests.test_config import ConfigTest, RecursiveConfigParamLookupTest
-from authbox.tests.test_fake_gpio import FakeGPIOTest
 from authbox.tests.test_gpio_button import BlinkTest
 from authbox.tests.test_gpio_buzzer import BuzzerTest
 from authbox.tests.test_gpio_relay import RelayTest

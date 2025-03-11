@@ -16,14 +16,14 @@
 
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.timer
-from authbox import fake_gpio_for_testing
 from authbox.compat import queue
 
 
 class TimerTest(unittest.TestCase):
     def setUp(self):
-        self.fake = fake_gpio_for_testing.FakeGPIO()
         self.q = queue.Queue()
         self.t = authbox.timer.Timer(self.q, "t", self.callback)
 

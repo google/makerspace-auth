@@ -17,12 +17,17 @@
 import unittest
 
 import authbox.badgereader_hid_keystroking
-from authbox import fake_evdev_device_for_testing
+
 from authbox.compat import queue
 
 
 class BadgereaderTest(unittest.TestCase):
     def setUp(self):
+        try:
+          from authbox import fake_evdev_device_for_testing
+        except ModuleNotFoundError:
+          self.fail("Test requires evdev, but evdev is not available")
+
         authbox.badgereader_hid_keystroking.evdev.list_devices = (
             fake_evdev_device_for_testing.list_devices
         )

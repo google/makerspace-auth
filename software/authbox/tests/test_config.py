@@ -16,6 +16,8 @@
 
 import unittest
 
+import setup_mock_pin_factory
+
 import authbox.config
 
 

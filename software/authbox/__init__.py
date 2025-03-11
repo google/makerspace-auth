@@ -16,24 +16,12 @@
 Authbox client modules.
 """
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 
-# To facilitate testing, this makes things importable on non-Raspberry Pi
-# This module isn't perfect (for example, input() doesn't read what output()
-# writes), but at least supports the api, and we can mock where it matters.
 try:
-    from RPi import GPIO
-
-    del GPIO
-except ImportError:
-    import warnings
-
-    warnings.warn("Using fake_rpi suitable for testing only!")
-    del warnings
-
-    import sys
-
-    import fake_rpi
-
-    sys.modules["RPi"] = fake_rpi.RPi
-    del sys, fake_rpi
+  from gpiozero import Device
+  del Device
+except ModuleNotFoundError:
+  print("ERROR: 'gpiozero' must be installed")
+  import sys
+  sys.exit(1)

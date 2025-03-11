@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Abstraction around RPi.GPIO for blinky buttons.
+"""Abstraction for blinky buttons.
 """
 
-from authbox.api import GPIO, BasePinThread
+from authbox.api import BasePinThread
 from authbox.compat import queue
+import gpiozero
 import time
 
 
@@ -52,13 +53,13 @@ class Button(BasePinThread):
         self.blinking = False
         self.blink_count = 0
         self.steady_state = False
+        self.gpio_led = gpiozero.LED(pin="BOARD" + str(self.output_pin))
+        button_pin = "BOARD" + str(self.input_pin)
+        self.gpio_button = gpiozero.Button(button_pin, bounce_time = 0.15)
         if self._on_down:
-            GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.add_event_detect(
-                self.input_pin, GPIO.FALLING, callback=self._callback, bouncetime=150
-            )
+            self.gpio_button.when_pressed = self._callback
 
-    def _callback(self, unused_channel):
+    def _callback(self):
         """Wrapper to queue events instead of calling them directly."""
         # If we have a callback registered, debounce the switch press
         if (self._on_down):
@@ -69,7 +70,7 @@ class Button(BasePinThread):
             while ((maxcount > 0) and (lowcount <= 4)):
                 time.sleep(0.01) # 10ms delay between each cycle
                 maxcount = maxcount - 1 # Decrement remaining cycles
-                if (not GPIO.input(self.input_pin)):
+                if (self.gpio_button.is_pressed):
                     lowcount = lowcount + 1 # One more low cycle detected
                 else:
                    lowcount = 0 # Not continuously low, reset
@@ -83,7 +84,7 @@ class Button(BasePinThread):
             self.blinking = item[0]
             if self.blinking:
                 # Always begin opposite of current state for immediate visual feedback
-                GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
+                self.gpio_led.toggle()
                 # Calculate number of remaining on/off blink toggles after this one
                 # A zero count means to keep blinking indefinitely
                 self.blink_count = item[1] * 2 - 1 if item[1] else 0
@@ -91,7 +92,7 @@ class Button(BasePinThread):
                 # Remember last non-blinking state of the light which will be restored
                 # after finite blink count has completed.
                 self.steady_state = item[1]
-                GPIO.output(self.output_pin, item[1])
+                self.gpio_led.value = item[1]
         except queue.Empty:
             if self.blinking:
                 # If blinking a finite number of times, count each on/off transition
@@ -101,14 +102,14 @@ class Button(BasePinThread):
                         # Ensure at the end of finite blink count we always return to
                         # the last on/off steady state, even if a new blink was started
                         # before a previous blink has finished.
-                        GPIO.output(self.output_pin, self.steady_state)
+                        self.gpio_led.value = self.steady_state
                         self.blinking = False
 
                 # Toggle output if blinking indefinitely or finite count not exhausted
                 if self.blinking:
                     # When blinking, invert every timeout expiration (we might have woken
                     # up for some other reason, but this appears to work in practice).
-                    GPIO.output(self.output_pin, not GPIO.input(self.output_pin))
+                    self.gpio_led.toggle()
 
     def blink(self, count=0):
         """Blink the light count number of times. If count is 0 then blink
@@ -128,3 +129,7 @@ class Button(BasePinThread):
 
         If the light is currently in the blink state, it stops blinkin."""
         self.blink_command_queue.put((False, False))
+
+    def is_pressed(self):
+        """Returns True if the button is currently pressed, False otherwise."""
+        return self.gpio_button.is_pressed

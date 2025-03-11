@@ -21,7 +21,6 @@ import evdev
 
 from authbox.api import BaseDerivedThread, NoMatchingDevice
 
-
 class HIDKeystrokingReader(BaseDerivedThread):
     """Badge reader hardware abstraction.
 
@@ -176,6 +175,12 @@ class HIDKeystrokingReader(BaseDerivedThread):
         self._device_name = device_name
         self.f = self.get_scanner_device()
         self.f.grab()
+
+    def setUp(self):
+        try:
+          import evdev
+        except ModuleNotFoundError:
+          self.fail("evdev not available")
 
     def get_scanner_device(self):
         """Finds connected device matching device_name.
