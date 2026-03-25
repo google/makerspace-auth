@@ -24,7 +24,7 @@ import shlex
 import subprocess
 import sys
 
-from authbox.api import BaseDispatcher
+from authbox.api import BaseDispatcher, MultiProxy, split_escaped
 from authbox.config import Config
 from authbox.timer import Timer
 
@@ -41,17 +41,54 @@ class Dispatcher(BaseDispatcher):
         self.load_config_object("badge_reader", on_scan=self.badge_scan)
         self.load_config_object("enable_output")
         self.load_config_object("buzzer")
+
+        # Custom loading for enable_output to support delay
+        enable_outputs_config = list(
+            split_escaped(self.config.get("pins", "enable_output"), preserve=True)
+        )
+
+        self.delay_map = self._load_delay_map()
+
+        self.outputs = []
+        if isinstance(self.enable_output, MultiProxy):
+            objs = self.enable_output.objs
+        else:
+            objs = [self.enable_output]
+
+        for i, obj in enumerate(objs):
+            if i < len(enable_outputs_config):
+                pin_str = enable_outputs_config[i].strip()
+                delay = self.delay_map.get(pin_str, 0)
+                self.outputs.append((obj, delay))
+            else:
+                self.outputs.append((obj, 0))
+
         self.warning_timer = Timer(self.event_queue, "warning_timer", self.warning)
         self.expire_timer = Timer(self.event_queue, "expire_timer", self.abort)
         self.expecting_press_timer = Timer(
             self.event_queue, "expecting_press_timer", self.abort
         )
-        # Otherwise, start them manually!
+
+        self.timers = {}
         self.threads.extend(
             [self.warning_timer, self.expire_timer, self.expecting_press_timer]
         )
 
+        for obj, delay in self.outputs:
+            if delay > 0:
+                timer_name = f"off_timer_{id(obj)}"
+                # Lambda captures obj correctly if we use a default arg.
+                timer = Timer(
+                    self.event_queue,
+                    timer_name,
+                    lambda source, o=obj: self.delayed_off_generic(o),
+                )
+                self.timers[id(obj)] = (timer, delay)
+                self.threads.append(timer)
+
         self.noise = None
+        self.delayed_off_running = False
+        self.running_timers_count = 0
 
     def _get_command_line(self, section, key, format_args):
         """Constructs a command line, safely.
@@ -65,6 +102,43 @@ class Dispatcher(BaseDispatcher):
         value = self.config.get(section, key)
         pieces = shlex.split(value)
         return [p.format(*format_args) for p in pieces]
+
+    def _load_delay_map(self):
+        delay_map = {}
+        try:
+            delays_str = self.config.get("pins", "output_off_delay_seconds")
+            delay_map = self._parse_delay_str(delays_str)
+        except Exception:
+            pass
+
+        if not delay_map:
+            try:
+                delays_str = self.config.get("auth", "output_off_delay_seconds")
+                delay_map = self._parse_delay_str(delays_str)
+            except Exception:
+                pass
+
+        return delay_map
+
+    def _parse_delay_str(self, delays_str):
+        delay_map = {}
+        if not delays_str:
+            return delay_map
+        delays_str = delays_str.replace("[", "").replace("]", "").strip()
+        pairs = [p.strip() for p in delays_str.split(",")]
+        for pair in pairs:
+            if "=" in pair:
+                k, v = pair.split("=")
+                k = k.strip()
+                v = v.strip()
+                try:
+                    # Use Config.parse_time to support suffixes
+                    from authbox.config import Config
+
+                    delay_map[k] = Config.parse_time(v)
+                except Exception as e:
+                    print("Error parsing delay for", k, v, e)
+        return delay_map
 
     def badge_scan(self, badge_id):
         # Malicious badge "numbers" that contain spaces require this extra work.
@@ -94,21 +168,30 @@ class Dispatcher(BaseDispatcher):
     def on_button_down(self, source):
         print("Button down", source)
         if not self.authorized:
-            self.off_button.blink(1)
-            self.buzzer.beep()
-            if self.noise:
-                self.noise.kill()
-            if self.config.get("sounds", "enable") == "1":
-                sound_command = self._get_command_line(
-                    "sounds", "command", [self.config.get("sounds", "sad_filename")]
-                )
-                self.noise = subprocess.Popen(
-                    sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL
-                )
-            return
+            if self.delayed_off_running:
+                self.authorized = True
+                self.delayed_off_running = False
+                self.running_timers_count = 0
+                for timer, _ in self.timers.values():
+                    timer.cancel()
+            else:
+                self.off_button.blink(1)
+                self.buzzer.beep()
+                if self.noise:
+                    self.noise.kill()
+                if self.config.get("sounds", "enable") == "1":
+                    sound_command = self._get_command_line(
+                        "sounds", "command", [self.config.get("sounds", "sad_filename")]
+                    )
+                    self.noise = subprocess.Popen(
+                        sound_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL
+                    )
+                return
         self.expecting_press_timer.cancel()
         self.on_button.on()
         self.enable_output.on()
+        for timer, _ in self.timers.values():
+            timer.cancel()
         self.buzzer.off()
         self.warning_timer.cancel()
         self.expire_timer.cancel()
@@ -126,7 +209,21 @@ class Dispatcher(BaseDispatcher):
 
     def abort(self, source):
         print("Abort", source)
-        self.enable_output.off()
+        delayed_count = 0
+        for obj, delay in self.outputs:
+            if delay == 0:
+                obj.off()
+            else:
+                timer, _ = self.timers.get(id(obj), (None, None))
+                if timer:
+                    timer.cancel()
+                    timer.set(delay)
+                    delayed_count += 1
+
+        if delayed_count > 0:
+            self.delayed_off_running = True
+            self.running_timers_count = delayed_count
+
         if self.authorized:
             command = self._get_command_line("auth", "deauth_command", [self.badge_id])
             subprocess.call(command)
@@ -141,6 +238,14 @@ class Dispatcher(BaseDispatcher):
         if self.noise:
             self.noise.kill()
             self.noise = None
+
+    def delayed_off_generic(self, obj):
+        print("Delayed off generic", obj)
+        obj.off()
+        self.running_timers_count -= 1
+        if self.running_timers_count <= 0:
+            self.delayed_off_running = False
+            self.running_timers_count = 0
 
     def warning(self, unused_source):
         self.buzzer.beepbeep()
