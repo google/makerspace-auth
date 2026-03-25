@@ -16,9 +16,9 @@
 
 import unittest
 
-import setup_mock_pin_factory
-
 import authbox.config
+
+from . import setup_mock_pin_factory  # noqa: F401
 
 
 class ConfigTest(unittest.TestCase):

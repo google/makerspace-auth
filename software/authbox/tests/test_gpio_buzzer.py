@@ -16,11 +16,12 @@
 
 import unittest
 
-import setup_mock_pin_factory
-
 import authbox.gpio_buzzer
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
+
+from . import setup_mock_pin_factory  # noqa: F401
+
 
 class TestBuzzer(authbox.gpio_buzzer.Buzzer):
     def assert_states(self, expected_states):
@@ -31,7 +32,8 @@ class TestBuzzer(authbox.gpio_buzzer.Buzzer):
         self.gpio_buzzer.pin.clear_states()
 
     def close(self):
-      self.gpio_buzzer.close()
+        self.gpio_buzzer.close()
+
 
 class BuzzerTest(unittest.TestCase):
     def setUp(self):
@@ -41,9 +43,9 @@ class BuzzerTest(unittest.TestCase):
         self.q = queue.Queue()
         self.b = TestBuzzer(self.q, "b", "15")
         self.b.clear_states()
-    
+
     def tearDown(self):
-      self.b.close()
+        self.b.close()
 
     def test_on(self):
         self.time.sleep(2)
@@ -59,7 +61,7 @@ class BuzzerTest(unittest.TestCase):
         self.assertRaises(queue.Empty, self.b.run_inner, False)
         self.b.assert_states([False])
 
-    def test_beep(self):        
+    def test_beep(self):
         self.b.beep()
         self.b.run_inner(False)
         self.b.on()

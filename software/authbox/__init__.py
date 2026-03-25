@@ -19,9 +19,11 @@ Authbox client modules.
 __version__ = "2.0.0"
 
 try:
-  from gpiozero import Device
-  del Device
+    from gpiozero import Device
+
+    del Device
 except ModuleNotFoundError:
-  print("ERROR: 'gpiozero' must be installed")
-  import sys
-  sys.exit(1)
+    print("ERROR: 'gpiozero' must be installed")
+    import sys
+
+    sys.exit(1)

@@ -14,16 +14,17 @@
 
 """Tests for authbox.api"""
 
-import gpiozero
-import gpiozero.pins.mock
 import tempfile
 import unittest
 
-import setup_mock_pin_factory
+import gpiozero
+import gpiozero.pins.mock  # noqa: F401
 
 import authbox.api
 import authbox.config
 import authbox.gpio_button
+
+from . import setup_mock_pin_factory  # noqa: F401
 
 SAMPLE_CONFIG = b"""
 [pins]
@@ -41,17 +42,18 @@ class ClassRegistryTest(unittest.TestCase):
         self.assertEqual(len(short_names), len(authbox.api.CLASS_REGISTRY))
 
     def test_all_names_importable(self):
-      try:
-        import evdev
-        del evdev
-      except ModuleNotFoundError:
-        self.fail("Test requires evdev, but evdev is not available")
-      
-        for c in authbox.api.CLASS_REGISTRY:
-            cls = authbox.api._import(c)
-            assert issubclass(
-                cls, (authbox.api.BasePinThread, authbox.api.BaseDerivedThread)
-            ), (c, cls, cls.__bases__)
+        try:
+            import evdev
+
+            del evdev
+        except ModuleNotFoundError:
+            self.fail("Test requires evdev, but evdev is not available")
+
+            for c in authbox.api.CLASS_REGISTRY:
+                cls = authbox.api._import(c)
+                assert issubclass(
+                    cls, (authbox.api.BasePinThread, authbox.api.BaseDerivedThread)
+                ), (c, cls, cls.__bases__)
 
 
 class DispatcherTest(unittest.TestCase):

@@ -14,15 +14,14 @@
 
 """Tests for authbox.badgereader_wiegand_gpio"""
 
-import gpiozero
 import threading
 import time
 import unittest
 
-import setup_mock_pin_factory
-
 import authbox.badgereader_wiegand_gpio
 from authbox.compat import queue
+
+from . import setup_mock_pin_factory  # noqa: F401
 
 
 class BadgereaderWiegandGPIOTest(unittest.TestCase):
@@ -35,7 +34,7 @@ class BadgereaderWiegandGPIOTest(unittest.TestCase):
             "40",
             on_scan=self.on_scan,
         )
-    
+
     def tearDown(self):
         self.b.close()
 
@@ -70,7 +69,7 @@ class BadgereaderWiegandGPIOTest(unittest.TestCase):
     def test_limited_queue_size(self):
         self.b.d1_input_device.pin.drive_low()
         for i in range(500):
-            # Send a 0            
+            # Send a 0
             self.b.d0_input_device.pin.drive_high()
             self.b.d0_input_device.pin.drive_low()
         self.b.run_inner()

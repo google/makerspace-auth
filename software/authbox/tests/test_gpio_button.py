@@ -17,11 +17,12 @@
 import unittest
 from functools import partial
 
-import setup_mock_pin_factory
-
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
+
+from . import setup_mock_pin_factory  # noqa: F401
+
 
 class TestButton(authbox.gpio_button.Button):
     def drive_high(self):
@@ -32,7 +33,7 @@ class TestButton(authbox.gpio_button.Button):
         self.gpio_led.pin.clear_states()
 
     def assert_button_states(self, expected_states):
-        assert len(self.gpio_button.pin.states) == len(expected_states) 
+        assert len(self.gpio_button.pin.states) == len(expected_states)
         self.gpio_button.pin.assert_states(expected_states)
 
     def assert_led_states(self, expected_states):
@@ -42,6 +43,7 @@ class TestButton(authbox.gpio_button.Button):
     def close(self):
         self.gpio_button.close()
         self.gpio_led.close()
+
 
 class ImpatientQueue(queue.Queue):
     def __init__(self, fake_time):
@@ -54,6 +56,7 @@ class ImpatientQueue(queue.Queue):
             self.time.sleep(timeout)
             raise queue.Empty
         return queue.Queue.get(self, block=block, timeout=timeout)
+
 
 class BlinkTest(unittest.TestCase):
     def setUp(self):
@@ -71,15 +74,15 @@ class BlinkTest(unittest.TestCase):
         self.b.clear_states()
 
     def tearDown(self):
-      self.b.close()
+        self.b.close()
 
     def on_down(self):
         pass
 
     def test_on(self):
         # Verify pins are correctly configured
-        self.assertEqual('input', self.b.gpio_button.pin._function)
-        self.assertEqual('output', self.b.gpio_led.pin._function)
+        self.assertEqual("input", self.b.gpio_button.pin._function)
+        self.assertEqual("output", self.b.gpio_led.pin._function)
 
         self.b.drive_high()
         self.b.run_inner()
@@ -94,7 +97,9 @@ class BlinkTest(unittest.TestCase):
             self.b.run_inner()
 
         # Number of on/off transitions corresponds to number of run_inner() calls
-        self.b.assert_led_states([False, True, False, True, False, True, False, True, False])
+        self.b.assert_led_states(
+            [False, True, False, True, False, True, False, True, False]
+        )
 
     def test_finite_blink_count_from_off(self):
         self.b.off()
@@ -159,10 +164,10 @@ class BlinkTest(unittest.TestCase):
         # won't be user visible because it's the same "on" state as the initial
         # steady state to which we return.
         self.b.assert_led_states(
-            [   
-                False, # Startup off state      
+            [
+                False,  # Startup off state
                 True,  # Initial steady state
-                False, # First blink cycle starts
+                False,  # First blink cycle starts
                 True,  # Second blink cycle starts
                 False,
                 True,  # Second blink cycle ends after 4 cycles

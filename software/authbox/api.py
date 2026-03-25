@@ -130,9 +130,7 @@ class BaseDerivedThread(threading.Thread):
 
 
 class BasePinThread(BaseDerivedThread):
-    def __init__(
-        self, event_queue, config_name, input_pin, output_pin
-    ):
+    def __init__(self, event_queue, config_name, input_pin, output_pin):
         super(BasePinThread, self).__init__(event_queue, config_name)
 
         self.input_pin = input_pin
