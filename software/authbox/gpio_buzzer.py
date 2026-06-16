@@ -16,12 +16,12 @@
 """
 from __future__ import print_function
 
+import queue
 import time
 
 import gpiozero
 
 from authbox.api import BasePinThread
-from authbox.compat import queue
 
 OFF = 0
 ON = 1

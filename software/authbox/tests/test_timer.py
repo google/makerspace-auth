@@ -14,10 +14,10 @@
 
 """Tests for authbox.timer"""
 
+import queue
 import unittest
 
 import authbox.timer
-from authbox.compat import queue
 
 from . import setup_mock_pin_factory  # noqa: F401
 

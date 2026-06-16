@@ -17,11 +17,11 @@
 
 from __future__ import print_function
 
+import queue
 import threading
 import time
 
 from authbox.api import BaseDerivedThread
-from authbox.compat import queue
 
 
 class Timer(BaseDerivedThread):

@@ -14,12 +14,12 @@
 
 """Tests for authbox.badgereader_wiegand_gpio"""
 
+import queue
 import threading
 import time
 import unittest
 
 import authbox.badgereader_wiegand_gpio
-from authbox.compat import queue
 
 from . import setup_mock_pin_factory  # noqa: F401
 

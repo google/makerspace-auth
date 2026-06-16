@@ -14,12 +14,12 @@
 
 """Tests for authbox.gpio_button"""
 
+import queue
 import unittest
 from functools import partial
 
 import authbox.gpio_button
 from authbox import fake_gpio_for_testing
-from authbox.compat import queue
 
 from . import setup_mock_pin_factory  # noqa: F401
 

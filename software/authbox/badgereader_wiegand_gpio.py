@@ -17,8 +17,9 @@
 
 from __future__ import division, print_function
 
+import queue
+
 from authbox.api import BaseWiegandPinThread
-from authbox.compat import queue
 
 DEFAULT_QUEUE_SIZE = 100  # more than enough for a scan
 DEFAULT_TIMEOUT_IN_MS = 15
