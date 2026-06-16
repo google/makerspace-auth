@@ -1,5 +1,5 @@
 .ONESHELL:
-SOURCES=authbox setup.py
+SOURCES=authbox *.py
 
 ifeq ($(shell grep ^ID= /etc/os-release | cut -d = -f 2), raspbian)
 	RASPBIAN=1

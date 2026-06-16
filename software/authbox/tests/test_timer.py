@@ -16,10 +16,10 @@
 
 import unittest
 
-import setup_mock_pin_factory
-
 import authbox.timer
 from authbox.compat import queue
+
+from . import setup_mock_pin_factory  # noqa: F401
 
 
 class TimerTest(unittest.TestCase):

@@ -16,8 +16,9 @@
 """
 from __future__ import print_function
 
-import gpiozero
 import time
+
+import gpiozero
 
 from authbox.api import BasePinThread
 from authbox.compat import queue

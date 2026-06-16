@@ -73,8 +73,8 @@ class WiegandGPIOReader(BaseWiegandPinThread):
         self.timeout_in_seconds = float(timeout_in_ms) / 1000
 
         if self._on_scan:
-            self.d0_input_device.when_activated = self.decode;
-            self.d1_input_device.when_activated = self.decode;
+            self.d0_input_device.when_activated = self.decode
+            self.d1_input_device.when_activated = self.decode
 
     def decode(self, channel):
         bit = "0" if channel == self.d0_input_device else "1"
@@ -119,4 +119,3 @@ class WiegandGPIOReader(BaseWiegandPinThread):
             self.d0_input_device.close()
         if self.d1_input_device:
             self.d1_input_device.close()
-

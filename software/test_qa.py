@@ -14,8 +14,8 @@
 
 import unittest
 
+
 class QATest(unittest.TestCase):
     # TODO
     def test_import(self):
-        import qa
-
+        import qa  # noqa: F401

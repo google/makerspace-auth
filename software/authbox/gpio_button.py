@@ -15,10 +15,12 @@
 """Abstraction for blinky buttons.
 """
 
+import time
+
+import gpiozero
+
 from authbox.api import BasePinThread
 from authbox.compat import queue
-import gpiozero
-import time
 
 
 class Button(BasePinThread):
@@ -55,26 +57,26 @@ class Button(BasePinThread):
         self.steady_state = False
         self.gpio_led = gpiozero.LED(pin="BOARD" + str(self.output_pin))
         button_pin = "BOARD" + str(self.input_pin)
-        self.gpio_button = gpiozero.Button(button_pin, bounce_time = 0.15)
+        self.gpio_button = gpiozero.Button(button_pin, bounce_time=0.15)
         if self._on_down:
             self.gpio_button.when_pressed = self._callback
 
     def _callback(self):
         """Wrapper to queue events instead of calling them directly."""
         # If we have a callback registered, debounce the switch press
-        if (self._on_down):
+        if self._on_down:
             # This is a de-bounce filter to prevent spurious signals from triggering the logic
             # Looks for 5 continuous active states (each separated by 10ms)
-            maxcount = 15 # Look for 150ms maximum
-            lowcount = 0 # Count the number of active states seen
-            while ((maxcount > 0) and (lowcount <= 4)):
-                time.sleep(0.01) # 10ms delay between each cycle
-                maxcount = maxcount - 1 # Decrement remaining cycles
-                if (self.gpio_button.is_pressed):
-                    lowcount = lowcount + 1 # One more low cycle detected
+            maxcount = 15  # Look for 150ms maximum
+            lowcount = 0  # Count the number of active states seen
+            while (maxcount > 0) and (lowcount <= 4):
+                time.sleep(0.01)  # 10ms delay between each cycle
+                maxcount = maxcount - 1  # Decrement remaining cycles
+                if self.gpio_button.is_pressed:
+                    lowcount = lowcount + 1  # One more low cycle detected
                 else:
-                   lowcount = 0 # Not continuously low, reset
-            if (lowcount > 4):
+                    lowcount = 0  # Not continuously low, reset
+            if lowcount > 4:
                 self.event_queue.put((self._on_down, self))
 
     def run_inner(self):

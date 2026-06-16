@@ -16,18 +16,21 @@
 
 import unittest
 
-import setup_mock_pin_factory
-
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
 from authbox.compat import queue
+
+from . import setup_mock_pin_factory  # noqa: F401
+
 
 class TestRelay(authbox.gpio_relay.Relay):
     def assert_states(self, expected_states):
         assert len(self.gpio_relay.pin.states) == len(expected_states)
         self.gpio_relay.pin.assert_states(expected_states)
+
     def clear_states(self):
-      self.gpio_relay.pin.clear_states()
+        self.gpio_relay.pin.clear_states()
+
 
 class RelayTest(unittest.TestCase):
     def setUp(self):

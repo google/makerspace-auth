@@ -16,11 +16,12 @@
 
 from __future__ import print_function
 
-import time
+import time  # noqa: F401
 
 
 def _log_match(a, b):
     return abs(a[0] - b[0]) < 0.1 and a[1] == b[1] and a[2] == b[2]
+
 
 class FakeTime(object):
     """Fake for the module 'time' so tests run faster."""
@@ -28,7 +29,7 @@ class FakeTime(object):
     def __init__(self):
         self.t = 0
 
-    def time(self):
+    def time(self):  # noqa: F811
         return self.t
 
     def sleep(self, x):
