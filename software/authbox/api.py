@@ -24,14 +24,13 @@ in CLASS_REGISTRY so they can be loaded lazily.
 
 from __future__ import print_function
 
+import queue
 import sys
 import threading
 import traceback
 import types
 
 from gpiozero import DigitalInputDevice
-
-from authbox.compat import queue
 
 # The line above simplifies imports for other modules that are already importing from api.
 

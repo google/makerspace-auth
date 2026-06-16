@@ -15,10 +15,9 @@
 """Config API for Authbox.
 
 """
+import configparser
 import os.path
 import re
-
-from authbox.compat import configparser
 
 # TODO: This is very simplistic, supporting no escapes or indirect lookups
 TEMPLATE_RE = re.compile(r"{((?!\d)\w+)}")

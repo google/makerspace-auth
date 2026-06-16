@@ -15,12 +15,12 @@
 """Abstraction for blinky buttons.
 """
 
+import queue
 import time
 
 import gpiozero
 
 from authbox.api import BasePinThread
-from authbox.compat import queue
 
 
 class Button(BasePinThread):

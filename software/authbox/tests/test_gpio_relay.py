@@ -14,11 +14,11 @@
 
 """Tests for authbox.gpio_relay"""
 
+import queue
 import unittest
 
 import authbox.gpio_relay
 from authbox import fake_gpio_for_testing
-from authbox.compat import queue
 
 from . import setup_mock_pin_factory  # noqa: F401
 

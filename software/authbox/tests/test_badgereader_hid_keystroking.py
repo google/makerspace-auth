@@ -14,10 +14,10 @@
 
 """Tests for authbox.badgereader_hid_keystroking"""
 
+import queue
 import unittest
 
 import authbox.badgereader_hid_keystroking
-from authbox.compat import queue
 
 
 class BadgereaderTest(unittest.TestCase):
